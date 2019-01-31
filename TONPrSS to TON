@@ -23,8 +23,8 @@ if Err=0 then
   next Term
   print("Sequence: "+left$(Output$,len(Output$)-1))
   REM Convert to PSS
-  PairSeqA(1)=PriSeq(1)
-  PairSeqB(1)=1
+  PairSeqA(1)=1
+  PairSeqB(1)=PriSeq(1)
   for Term=2 to Length
     for Term2=Term to 1 step -1
       if PriSeq(Term2)<PriSeq(Term) then break endif
