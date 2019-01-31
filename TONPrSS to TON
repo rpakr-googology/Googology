@@ -1,6 +1,6 @@
 REM Input:TONPrSS of ω^α
 REM Output:TON of α
-dim PriSeq(999),PairSeqA(999),PairSeqB(999),Parent(999)
+dim PriSeq(999),PairSeqA(999),PairSeqB(999),Parent(999),CommaPos(99),Substring$(99)
 input ""Seq$
 REM Sequence Vality Check
 CurrTerm=1
@@ -103,4 +103,70 @@ if Err=0 then
   next CurrChar
   SC$=Output$
   print ("Semicolons: "+Output$)
+  REM Convert to TON
+  for CurrChar=1 to len(SC$)
+    Char$=mid$(SC$,CurrChar,1)
+    if Char$="," then Exp$=Exp$+",   " else Exp$=Exp$+Char$ endif
+  next CurrChar
+  SC$=Exp$
+  REM Search left for C
+  for CurrChar=len(SC$) to 1 step -1
+    Char$=mid$(SC$,CurrChar,1)
+    if Char$="C" then
+      REM Reset Comma Positions
+      for Index=1 to 99
+        CommaPos(Index)=0
+      next Index
+      CommaCount=0
+      REM Search right for commas and corresponding parenthesis
+      Level=0
+      for CurrChar2=CurrChar to len(SC$)
+        Char2$=mid$(SC$,CurrChar2,1)
+        if Char2$="," and Level=1 then
+          CommaCount=CommaCount+1
+          CommaPos(CommaCount)=CurrChar2
+        endif
+        if Char2$="(" then Level=Level+1 endif
+        if Char2$=")" then 
+          Level=Level-1
+          if Level=0 then break endif
+        endif
+      next CurrChar2
+      CPos=CurrChar
+      SemicolonPos=CurrChar2-2
+      RParenPos=CurrChar2
+      if CommaCount=0 then mid$(SC$,SemicolonPos,1)="," else
+        REM Reset Substrings
+        for Index=1 to 99
+          Substring$(Index)=""
+        next Index
+        REM Extract Substrings
+        Substring$(1)=mid$(SC$,CPos+2,CommaPos(1)-CPos-2)
+        for CommaIndex=2 to CommaCount
+          Substring$(CommaIndex)=mid$(SC$,CommaPos(CommaIndex-1)+1,CommaPos(CommaIndex)-CommaPos(CommaIndex-1)-1)
+        next CommaIndex
+        Substring$(CommaCount+1)=mid$(SC$,CommaPos(CommaCount)+1,SemicolonPos-CommaPos(CommaCount)-1)
+        SubstringCount=CommaCount+1
+        Second$=mid$(SC$,RParenPos-1,1)
+        REM Reset Replacement String
+        Replacement$=""
+        REM Calculate Replacement
+        for SubstringIndex=1 to SubstringCount
+          Replacement$=Replacement$+"C("+Substring$(SubstringCount-SubstringIndex+1)+","
+        next SubstringIndex
+        Replacement$=Replacement$+Second$
+        for ParenCount=1 to SubstringCount
+          Replacement$=Replacement$+")"
+        next ParenCount
+        Subst$=""
+        for CurrChar2=1 to len(Replacement$)
+          Char2$=mid$(Replacement$,CurrChar2,1)
+          if not Char2$=" " then Subst$=Subst$+Char2$ endif
+        next CurrChar2
+        REM Replacement
+        mid$(SC$,CPos,RParenPos-CPos+1)=Subst$
+      endif
+    endif
+  next CurrChar
+  print("TON: "+SC$)
 endif
