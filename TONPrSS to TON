@@ -1,0 +1,43 @@
+REM Input:TONPrSS of ω^α
+REM Output:TON of α
+dim PriSeq(999),PairSeqA(999),PairSeqB(999)
+input ""Seq$
+REM Sequence Vality Check
+CurrTerm=1
+for CurrChar=1 to len(Seq$)
+  Char$=mid$(Seq$,CurrChar,1)
+  if Char$="," then CurrTerm=CurrTerm+1 endif
+  if Char$>="0" and Char$<="9" then PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(Char$) endif
+next CurrChar
+Length=CurrTerm
+if PriSeq(1)>2 or PriSeq(1)<1 then Err=1 endif
+for Term=2 to Length
+  if PriSeq(Term)-PriSeq(Term-1)>2 or PriSeq(Term)<=PriSeq(1) then Err=1 endif
+next Term
+if Err=1 then print("Sequence Invalid") else print ("Sequence Valid") endif
+if Err=0 then
+  REM Output Sequence
+  for Term=1 to Length
+    Output$=Output$+str$(PriSeq(Term))
+    Output$=Output$+","
+  next Term
+  print("Sequence: "+left$(Output$,len(Output$)-1))
+  REM Convert to PSS
+  PairSeqA(1)=PriSeq(1)
+  PairSeqB(1)=1
+  for Term=2 to Length
+    for Term2=Term to 1 step -1
+      if PriSeq(Term2)<PriSeq(Term) then break endif
+    next Term2
+    PairSeqA(Term)=PairSeqA(Term2)+1
+    PairSeqB(Term)=PriSeq(Term)-PriSeq(Term2)
+  next Term
+  REM Output PSS
+  Output$=""
+  for Term=1 to Length
+    Output$=Output$+"("+str$(PairSeqA(Term))+","+str$(PairSeqB(Term))+")"
+  next Term
+  print ("Pair Sequence: "+Output$)
+  REM Convert to 0,D,E,Z
+  REM Work-in-progress
+endif
