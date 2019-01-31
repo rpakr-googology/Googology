@@ -50,11 +50,11 @@ if Err=0 then
   if PairSeqB(1)=2 then DE$="E(" endif
   for Term=2 to Length
     Distance=Term-Parent(Term)
-    Difference=PriSeq(Term-1)-PriSeq(Term)
+    Difference=PairSeqA(Term-1)-PairSeqA(Term)
     if Distance=1 and PairSeqB(Term)=1 then DE$=DE$+"D(" endif
     if Distance=1 and PairSeqB(Term)=2 then DE$=DE$+"E(" endif
     if Distance>1 then 
-      for ParenCount=1 to Difference-1
+      for ParenCount=1 to Difference+1
         DE$=DE$+")"
       next ParenCount
       if PairSeqB(Term)=1 then DE$=DE$+",D(" endif
@@ -76,4 +76,31 @@ if Err=0 then
   next CurrChar
   DE$=Output$
   print ("0,D,E,Z Expression: "+Output$)
+  REM Convert to Semicolons
+  for CurrChar=1 to len(DE$)
+    Char$=mid$(DE$,CurrChar,1)
+    if Char$="D" or Char$="E" then
+      Level=0
+      for CurrChar2=CurrChar to len(DE$)
+        Char2$=mid$(DE$,CurrChar2,1)
+        if Char2$="(" then Level=Level+1 endif
+        if Char2$=")" or Char2$="a" or Char2$="b" then 
+          Level=Level-1
+          if Level=0 then break endif
+        endif
+      next CurrChar2
+      if Char$="D" then mid$(DE$,CurrChar2,1)="a" else mid$(DE$,CurrChar2,1)="b" endif
+    endif
+  next CurrChar
+  Output$=""
+  for CurrChar=1 to len(DE$)
+    Char$=mid$(DE$,CurrChar,1)
+    if not(Char$="a" or Char$="b" or Char$="D" or Char$="E") then Output$=Output$+Char$ endif
+    if Char$="a" then Output$=Output$+";0)" endif
+    if Char$="b" then Output$=Output$+";Z)" endif
+    if Char$="D" then Output$=Output$+"C" endif
+    if Char$="E" then Output$=Output$+"C" endif
+  next CurrChar
+  SC$=Output$
+  print ("Semicolons: "+Output$)
 endif
