@@ -1,11 +1,11 @@
 REM Input:LPpS Sequence
 REM Output:Expansion of LPpS Sequence
 REM LPpS is a notation by Googologist 108Hassium
-dim PriSeq(999)
 input ""Seq$
 REM Sequence Validity Check
 CurrTerm=1
 for CurrChar=1 to len(Seq$)
+  dim PriSeq(CurrTerm)
   Char$=mid$(Seq$,CurrChar,1)
   if Char$="," then CurrTerm=CurrTerm+1 endif
   if Char$>="0" and Char$<="9" then 
@@ -54,6 +54,7 @@ else
         Output$=Output$+","
       next Term
       print(left$(Output$,len(Output$)-1))
+      dim PriSeq(Length+BadLength)
       for Term=1 to BadLength
         PriSeq(Length+Term)=PriSeq(BR+Term-1)+(Repetition+1)*Delta
       next Term
