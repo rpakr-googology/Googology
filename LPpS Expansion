@@ -25,6 +25,7 @@ else
   if PriSeq(Length)=0 then
     REM Successor Case
     print("Successor Case")
+    Output$=""
     for Term=1 to Length-1
       Output$=Output$+str$(PriSeq(Term))
       Output$=Output$+","
