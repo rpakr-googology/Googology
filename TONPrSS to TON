@@ -169,4 +169,11 @@ if Err=0 then
     endif
   next CurrChar
   print("TON: "+SC$)
+  REM Convert to Postfix
+  Output$=""
+  for CurrChar=len(SC$) to 1 step -1
+    Char$=mid$(SC$,CurrChar,1)
+    if Char$="0" or Char$="Z" or Char$="C" then Output$=Output$+Char$ endif
+  next CurrChar
+  print("Postfix: "+Output$)
 endif
