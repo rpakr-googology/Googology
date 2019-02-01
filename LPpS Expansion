@@ -1,6 +1,6 @@
 REM Input:LPpS Sequence
 REM Output:Expansion of LPpS Sequence
-REM LPps is a notation by Googologist 108Hassium
+REM LPpS is a notation by Googologist 108Hassium
 dim PriSeq(999)
 input ""Seq$
 REM Sequence Vality Check
