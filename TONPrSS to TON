@@ -42,7 +42,7 @@ if Err=0 then
   REM Output PSS
   Output$=""
   for Term=1 to Length
-    Output$=Output$+"("+str$(PairSeqA(Term))+","+str$(PairSeqB(Term))+")"
+    Output$=Output$+"("+str$(PairSeqA(Term)-1)+","+str$(PairSeqB(Term)-1)+")"
   next Term
   print ("Pair Sequence: "+Output$)
   REM Convert to 0,D,E,Z
