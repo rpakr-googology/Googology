@@ -3,7 +3,7 @@ REM Output:Expansion of LPpS Sequence
 REM LPpS is a notation by Googologist 108Hassium
 dim PriSeq(999)
 input ""Seq$
-REM Sequence Vality Check
+REM Sequence Validity Check
 CurrTerm=1
 for CurrChar=1 to len(Seq$)
   Char$=mid$(Seq$,CurrChar,1)
