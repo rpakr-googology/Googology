@@ -75,7 +75,6 @@ else
     if Err>1 then
       print "Expression Invalid"
     else
-      print "Expression Valid"
       REM Convert to Semicolons
       for CurrChar=1 to len(TONExp$)
         if mid$(TONExp$,CurrChar,1)="C" then
@@ -193,8 +192,20 @@ else
       for Term=1 to Length
         Output$=Output$+"("+str$(PairSeqA(Term))+","+str$(PairSeqB(Term))+")"
       next Term
-      print(DE$)
       print("Pair Sequence: "+Output$)
+      REM Convert to Primitive Sequence
+      PriSeq(1)=PairSeqB(1)+1
+      for Term=2 to Length
+        for Term2=Term to 1 step -1
+          if PairSeqA(Term2)<PairSeqA(Term) then break endif
+        next Term2
+        PriSeq(Term)=PriSeq(Term2)+PairSeqB(Term)+1
+      next Term
+      Output$=""
+      for Term=1 to Length
+        Output$=Output$+str$(PriSeq(Term))+","
+      next Term
+      print("Sequence: "+left$(Output$,len(Output$)-1))
     endif
   endif
 endif
