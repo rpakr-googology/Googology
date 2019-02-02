@@ -1,11 +1,10 @@
 REM Input:TON of α
 REM Output:TONPrSS of ω^α
-print "TON Expression:"
-input ""TonExp$
-print TonExp$
+input ""TONExp$
+print ("TON Expression: "+TONExp$)
 REM Check Validity of Expression
-for CurrChar=1 to len(TonExp$)
-  CurrChar$=mid$(TonExp$,CurrChar,1)
+for CurrChar=1 to len(TONExp$)
+  CurrChar$=mid$(TONExp$,CurrChar,1)
   if CurrChar$="C" then
     CCount=CCount+1
     dim CPos(CCount)
@@ -36,24 +35,24 @@ if CCount<>LParenCount then Err=Err+1 endif
 if CCount<>CommaCount then Err=Err+1 endif
 if CCount<>RParenCount then Err=Err+1 endif
 if not CCount-ConstCount+1=0 then Err=Err+1 endif
-if len(TonExp$)>CCount+LParenCount+CommaCount+RParenCount+ConstCount then Err=Err+1 endif
+if len(TONExp$)>CCount+LParenCount+CommaCount+RParenCount+ConstCount then Err=Err+1 endif
 if Err>0 then
   print "Expression Invalid"
 else
   for CurrIndex=1 to CCount
-    if not mid$(TonExp$,CPos(CurrIndex)+1,1)="(" then Err=Err+1 endif
+    if not mid$(TONExp$,CPos(CurrIndex)+1,1)="(" then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to LParenCount
-    if not(mid$(TonExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TonExp$,LParenPos(CurrIndex)+1,1)="Z" or mid$(TonExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+    if not(mid$(TONExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="Z" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to RParenCount
-    if not(mid$(TonExp$,RParenPos(CurrIndex)+1,1)=")" or mid$(TonExp$,RParenPos(CurrIndex)+1,1)=",") then Err=Err+1 endif
+    if not(mid$(TONExp$,RParenPos(CurrIndex)+1,1)=")" or mid$(TONExp$,RParenPos(CurrIndex)+1,1)=",") then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to ConstCount
-    if not(mid$(TonExp$,ConstPos(CurrIndex)+1,1)="," or mid$(TonExp$,ConstPos(CurrIndex)+1,1)=")") then Err=Err+1 endif
+    if not(mid$(TONExp$,ConstPos(CurrIndex)+1,1)="," or mid$(TONExp$,ConstPos(CurrIndex)+1,1)=")") then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to CommaCount
-    if not(mid$(TonExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TonExp$,CommaPos(CurrIndex)+1,1)="Z" or mid$(TonExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+    if not(mid$(TONExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="Z" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
   next CurrIndex
   if Err>1 then
     print "Expression Invalid"
@@ -61,26 +60,83 @@ else
     for CurrCIndex=1 to CCount
       NestLevel=0
       BaseLayerCommaCount=0
-      for CurrCharIndex=CPos(CurrCIndex) to len(TonExp$)
-        if mid$(TonExp$,CurrCharIndex,1)="(" then NestLevel=NestLevel+1 endif
-        if mid$(TonExp$,CurrCharIndex,1)=")" then 
+      for CurrChar=CPos(CurrCIndex) to len(TONExp$)
+        if mid$(TONExp$,CurrChar,1)="(" then NestLevel=NestLevel+1 endif
+        if mid$(TONExp$,CurrChar,1)=")" then 
           NestLevel=NestLevel-1
           if NestLevel=0 then
             if not BaseLayerCommaCount=1 then Err=Err+1 endif
             break
           endif
         endif
-        if mid$(TonExp$,CurrCharIndex,1)="," and NestLevel=1 then BaseLayerCommaCount=BaseLayerCommaCount+1 endif
-      next CurrCharIndex
+        if mid$(TONExp$,CurrChar,1)="," and NestLevel=1 then BaseLayerCommaCount=BaseLayerCommaCount+1 endif
+      next CurrChar
     next CurrCIndex
     if Err>1 then
       print "Expression Invalid"
     else
       print "Expression Valid"
-      REM Start Step 1
-      REM Start Step 2
-      REM Start Step 3
-      REM Start Step 4
+      REM Convert to Semicolons
+      for CurrChar=1 to len(TONExp$)
+        if mid$(TONExp$,CurrChar,1)="C" then
+          REM Find Corresponding Comma
+          CPos=CurrChar
+          NestLevel=0
+          for CurrChar2=CPos to len(TONExp$)
+            if mid$(TONExp$,CurrChar2,1)="(" then NestLevel=NestLevel+1 endif
+            if mid$(TONExp$,CurrChar2,1)="," and NestLevel=1 then CommaPos=CurrChar2 endif
+            if mid$(TONExp$,CurrChar2,1)=")" then
+              NestLevel=NestLevel-1
+              if NestLevel=0 then break endif
+            endif
+          next CurrChar2
+          if mid$(TONExp$,CommaPos+1,1)="0" or mid$(TONExp$,CommaPos+1,1)="Z" then
+            mid$(TONExp$,CommaPos,1)=";"
+          else
+            REM Extract Substrings
+            SubstringIndex=1
+            dim Substring$(SubstringIndex)
+            Substring$(1)=mid$(TONExp$,CPos+2,CommaPos-CPos-2)
+            for SubstringIndex=2 to len(TONExp$)
+              CPos=CommaPos+1
+              NestLevel=0
+              for CurrChar2=CPos to len(TONExp$)
+                if mid$(TONExp$,CurrChar2,1)="(" then NestLevel=NestLevel+1 endif
+                if mid$(TONExp$,CurrChar2,1)="," and NestLevel=1 then CommaPos=CurrChar2 endif
+                if mid$(TONExp$,CurrChar2,1)=")" then
+                  NestLevel=NestLevel-1
+                  if NestLevel=0 then break endif
+                endif
+              next CurrChar2
+              dim Substring$(SubstringIndex)
+              Substring$(SubstringIndex)=mid$(TONExp$,CPos+2,CommaPos-CPos-2)
+              if mid$(TONExp$,CommaPos+1,1)="0" or mid$(TONExp$,CommaPos+1,1)="Z" then
+                Second$=mid$(TONExp$,CommaPos+1,1)
+                break
+              endif
+            next SubstringIndex
+            REM Compute Replacement String
+            Subst$="C("
+            dim Substring$(SubstringIndex)
+            for CurrSubstring=SubstringIndex to 1 step -1
+              Subst$=Subst$+Substring$(CurrSubstring)+","
+            next CurrSubstring
+            right$(Subst$,1)=";"
+            Subst$=Subst$+Second$+")"
+            for SpaceCount=1 to 3*SubstringIndex-3
+              Subst$=Subst$+" "
+            next SpaceCount
+            REM Replacement
+            mid$(TONExp$,CurrChar,len(Subst$))=Subst$
+          endif
+        endif
+      next CurrChar
+      Output$=""
+      for CurrChar=1 to len(TONExp$)
+        if not mid$(TONExp$,CurrChar,1)=" " then Output$=Output$+mid$(TONExp$,CurrChar,1) endif
+      next CurrChar
+      print("Semicolons: "+Output$)
+      TONExp$=Output$
     endif
   endif
 endif
