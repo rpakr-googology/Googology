@@ -1,6 +1,6 @@
 REM Input:TONPrSS of ω^α
 REM Output:TON of α
-dim PriSeq(999),PairSeqA(999),PairSeqB(999),Parent(999),CommaPos(99),Substring$(99)
+dim CommaPos(99),Substring$(99)
 input ""Seq$
 REM Sequence Vality Check
 CurrTerm=1
@@ -8,10 +8,12 @@ for CurrChar=1 to len(Seq$)
   Char$=mid$(Seq$,CurrChar,1)
   if Char$="," then CurrTerm=CurrTerm+1 endif
   if Char$>="0" and Char$<="9" then 
+  dim PriSeq(CurrTerm)
     PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(Char$)
   endif
 next CurrChar
 Length=CurrTerm
+dim PairSeqA(Length),PairSeqB(Length),Parent(Length)
 if PriSeq(1)>2 or PriSeq(1)<1 then Err=1 endif
 for Term=2 to Length
   if PriSeq(Term)-PriSeq(Term-1)>2 or PriSeq(Term)<=PriSeq(1) then Err=1 endif
