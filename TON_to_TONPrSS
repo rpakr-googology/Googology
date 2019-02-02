@@ -3,34 +3,35 @@ REM Output:TONPrSS of ω^α
 print "TON Expression:"
 input ""TonExp$
 print TonExp$
-for CharIndex=1 to len(TonExp$)
-  CurrChar$=mid$(TonExp$,CharIndex,1)
+REM Check Validity of Expression
+for CurrChar=1 to len(TonExp$)
+  CurrChar$=mid$(TonExp$,CurrChar,1)
   if CurrChar$="C" then
     CCount=CCount+1
     dim CPos(CCount)
-    CPos(CCount)=CharIndex
+    CPos(CCount)=CurrChar
   endif
   if CurrChar$="(" then
     LParenCount=LParenCount+1
     dim LParenPos(LParenCount)
-    LParenPos(LParenCount)=CharIndex
+    LParenPos(LParenCount)=CurrChar
   endif
   if CurrChar$="," then
     CommaCount=CommaCount+1
     dim CommaPos(CommaCount)
-    CommaPos(CommaCount)=CharIndex
+    CommaPos(CommaCount)=CurrChar
   endif
   if CurrChar$=")" then
     RParenCount=RParenCount+1
     dim RParenPos(RParenCount)
-    RParenPos(RParenCount)=CharIndex
+    RParenPos(RParenCount)=CurrChar
   endif
   if CurrChar$="0" or CurrChar$="Z" then
     ConstCount=ConstCount+1
     dim ConstPos(ConstCount)
-    ConstPos(ConstCount)=CharIndex
+    ConstPos(ConstCount)=CurrChar
   endif
-next
+next CurrChar
 if CCount<>LParenCount then Err=Err+1 endif
 if CCount<>CommaCount then Err=Err+1 endif
 if CCount<>RParenCount then Err=Err+1 endif
@@ -41,36 +42,37 @@ if Err>0 then
 else
   for CurrIndex=1 to CCount
     if not mid$(TonExp$,CPos(CurrIndex)+1,1)="(" then Err=Err+1 endif
-  next
+  next CurrIndex
   for CurrIndex=1 to LParenCount
     if not(mid$(TonExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TonExp$,LParenPos(CurrIndex)+1,1)="Z" or mid$(TonExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
-  next
+  next CurrIndex
   for CurrIndex=1 to RParenCount
     if not(mid$(TonExp$,RParenPos(CurrIndex)+1,1)=")" or mid$(TonExp$,RParenPos(CurrIndex)+1,1)=",") then Err=Err+1 endif
-  next
+  next CurrIndex
   for CurrIndex=1 to ConstCount
     if not(mid$(TonExp$,ConstPos(CurrIndex)+1,1)="," or mid$(TonExp$,ConstPos(CurrIndex)+1,1)=")") then Err=Err+1 endif
-  next
+  next CurrIndex
   for CurrIndex=1 to CommaCount
     if not(mid$(TonExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TonExp$,CommaPos(CurrIndex)+1,1)="Z" or mid$(TonExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
-  next
+  next CurrIndex
   if Err>1 then
     print "Expression Invalid"
   else
     for CurrCIndex=1 to CCount
       NestLevel=0
       BaseLayerCommaCount=0
-      Done=0
       for CurrCharIndex=CPos(CurrCIndex) to len(TonExp$)
-        if mid$(TonExp$,CurrCharIndex,1)=")" and NestLevel=1 and Done=1 then
-          if BaseLayerCommaCount=1 then Done=1 else Done=2 endif
-        endif
         if mid$(TonExp$,CurrCharIndex,1)="(" then NestLevel=NestLevel+1 endif
-        if mid$(TonExp$,CurrCharIndex,1)=")" and NestLevel>1 then NestLevel=NestLevel-1 endif
+        if mid$(TonExp$,CurrCharIndex,1)=")" then 
+          NestLevel=NestLevel-1
+          if NestLevel=0 then
+            if not BaseLayerCommaCount=1 then Err=Err+1 endif
+            break
+          endif
+        endif
         if mid$(TonExp$,CurrCharIndex,1)="," and NestLevel=1 then BaseLayerCommaCount=BaseLayerCommaCount+1 endif
-      next
-      if Done=2 then Err=Err+1 endif
-    next
+      next CurrCharIndex
+    next CurrCIndex
     if Err>1 then
       print "Expression Invalid"
     else
