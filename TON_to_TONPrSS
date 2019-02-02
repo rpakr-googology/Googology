@@ -82,7 +82,7 @@ else
           REM Find Corresponding Comma
           CPos=CurrChar
           NestLevel=0
-          for CurrChar2=CPos to len(TONExp$)
+          for CurrChar2=CurrChar to len(TONExp$)
             if mid$(TONExp$,CurrChar2,1)="(" then NestLevel=NestLevel+1 endif
             if mid$(TONExp$,CurrChar2,1)="," and NestLevel=1 then CommaPos=CurrChar2 endif
             if mid$(TONExp$,CurrChar2,1)=")" then
@@ -136,6 +136,31 @@ else
         if not mid$(TONExp$,CurrChar,1)=" " then Output$=Output$+mid$(TONExp$,CurrChar,1) endif
       next CurrChar
       print("Semicolons: "+Output$)
+      TONExp$=Output$
+      REM Convert to 0,D,E,Z
+      for CurrChar=1 to len(TONExp$)
+        if mid$(TONExp$,CurrChar,1)="C" then
+          NestLevel=0
+          for CurrChar2=CurrChar to len(TONExp$)
+            if mid$(TONExp$,CurrChar2,1)="(" then NestLevel=NestLevel+1 endif
+            if mid$(TONExp$,CurrChar2,1)=")" then
+              NestLevel=NestLevel-1
+              if NestLevel=0 then break endif
+            endif
+          next CurrChar2
+          if mid$(TONExp$,CurrChar2-1,1)="0" then
+            mid$(TONExp$,CurrChar,1)="D"
+          else
+            mid$(TONExp$,CurrChar,1)="E"
+          endif
+          mid$(TONExp$,CurrChar2-2,2)="  "
+        endif
+      next CurrChar
+      Output$=""
+      for CurrChar=1 to len(TONExp$)
+        if not mid$(TONExp$,CurrChar,1)=" " then Output$=Output$+mid$(TONExp$,CurrChar,1) endif
+      next CurrChar
+      print("0,D,E,Z Expression: "+Output$)
       TONExp$=Output$
     endif
   endif
