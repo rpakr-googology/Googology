@@ -162,6 +162,39 @@ else
       next CurrChar
       print("0,D,E,Z Expression: "+Output$)
       TONExp$=Output$
+      REM Convert to PSS
+      DE$=""
+      for CurrChar=1 to len(TONExp$)
+        if not(mid$(TONExp$,CurrChar,1)="0" or mid$(TONExp$,CurrChar,1)="Z") then DE$=DE$+mid$(TONExp$,CurrChar,1) endif
+        if mid$(TONExp$,CurrChar,1)="0" then DE$=DE$+"D()" endif
+        if mid$(TONExp$,CurrChar,1)="Z" then DE$=DE$+"E()" endif
+      next CurrChar
+      for CurrChar=1 to len(DE$)
+        if mid$(DE$,CurrChar,1)="D" or mid$(DE$,CurrChar,1)="E" then Length=Length+1 endif
+      next CurrChar
+      dim PairSeqA(Length),PairSeqB(Length),PriSeq(Length)
+      CurrHeight=0
+      Term=1
+      for CurrChar=1 to len(DE$)
+        if mid$(DE$,CurrChar,1)="D" then
+          PairSeqA(Term)=CurrHeight
+          PairSeqB(Term)=0
+          Term=Term+1
+        endif
+        if mid$(DE$,CurrChar,1)="E" then
+          PairSeqA(Term)=CurrHeight
+          PairSeqB(Term)=1
+          Term=Term+1
+        endif
+        if mid$(DE$,CurrChar,1)="(" then CurrHeight=CurrHeight+1 endif
+        if mid$(DE$,CurrChar,1)=")" then CurrHeight=CurrHeight-1 endif
+      next CurrChar
+      Output$=""
+      for Term=1 to Length
+        Output$=Output$+"("+str$(PairSeqA(Term))+","+str$(PairSeqB(Term))+")"
+      next Term
+      print(DE$)
+      print("Pair Sequence: "+Output$)
     endif
   endif
 endif
