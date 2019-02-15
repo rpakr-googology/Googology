@@ -25,7 +25,7 @@ for CurrChar=1 to len(TONExp$)
     dim RParenPos(RParenCount)
     RParenPos(RParenCount)=CurrChar
   endif
-  if CurrChar$="0" or CurrChar$="Z" then
+  if CurrChar$="0" or CurrChar$="W" then
     ConstCount=ConstCount+1
     dim ConstPos(ConstCount)
     ConstPos(ConstCount)=CurrChar
@@ -43,7 +43,7 @@ else
     if not mid$(TONExp$,CPos(CurrIndex)+1,1)="(" then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to LParenCount
-    if not(mid$(TONExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="Z" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+    if not(mid$(TONExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="W" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to RParenCount
     if not(mid$(TONExp$,RParenPos(CurrIndex)+1,1)=")" or mid$(TONExp$,RParenPos(CurrIndex)+1,1)=",") then Err=Err+1 endif
@@ -52,7 +52,7 @@ else
     if not(mid$(TONExp$,ConstPos(CurrIndex)+1,1)="," or mid$(TONExp$,ConstPos(CurrIndex)+1,1)=")") then Err=Err+1 endif
   next CurrIndex
   for CurrIndex=1 to CommaCount
-    if not(mid$(TONExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="Z" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+    if not(mid$(TONExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="W" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
   next CurrIndex
   if Err>1 then
     print "Expression Invalid"
@@ -89,7 +89,7 @@ else
               if NestLevel=0 then break endif
             endif
           next CurrChar2
-          if mid$(TONExp$,CommaPos+1,1)="0" or mid$(TONExp$,CommaPos+1,1)="Z" then
+          if mid$(TONExp$,CommaPos+1,1)="0" or mid$(TONExp$,CommaPos+1,1)="W" then
             mid$(TONExp$,CommaPos,1)=";"
           else
             REM Extract Substrings
@@ -109,7 +109,7 @@ else
               next CurrChar2
               dim Substring$(SubstringIndex)
               Substring$(SubstringIndex)=mid$(TONExp$,CPos+2,CommaPos-CPos-2)
-              if mid$(TONExp$,CommaPos+1,1)="0" or mid$(TONExp$,CommaPos+1,1)="Z" then
+              if mid$(TONExp$,CommaPos+1,1)="0" or mid$(TONExp$,CommaPos+1,1)="W" then
                 Second$=mid$(TONExp$,CommaPos+1,1)
                 break
               endif
@@ -136,7 +136,7 @@ else
       next CurrChar
       print("Semicolons: "+Output$)
       TONExp$=Output$
-      REM Convert to 0,D,E,Z
+      REM Convert to 0,D,E,W
       for CurrChar=1 to len(TONExp$)
         if mid$(TONExp$,CurrChar,1)="C" then
           NestLevel=0
@@ -159,14 +159,14 @@ else
       for CurrChar=1 to len(TONExp$)
         if not mid$(TONExp$,CurrChar,1)=" " then Output$=Output$+mid$(TONExp$,CurrChar,1) endif
       next CurrChar
-      print("0,D,E,Z Expression: "+Output$)
+      print("0,D,E,W Expression: "+Output$)
       TONExp$=Output$
       REM Convert to PSS
       DE$=""
       for CurrChar=1 to len(TONExp$)
-        if not(mid$(TONExp$,CurrChar,1)="0" or mid$(TONExp$,CurrChar,1)="Z") then DE$=DE$+mid$(TONExp$,CurrChar,1) endif
+        if not(mid$(TONExp$,CurrChar,1)="0" or mid$(TONExp$,CurrChar,1)="W") then DE$=DE$+mid$(TONExp$,CurrChar,1) endif
         if mid$(TONExp$,CurrChar,1)="0" then DE$=DE$+"D()" endif
-        if mid$(TONExp$,CurrChar,1)="Z" then DE$=DE$+"E()" endif
+        if mid$(TONExp$,CurrChar,1)="W" then DE$=DE$+"E()" endif
       next CurrChar
       for CurrChar=1 to len(DE$)
         if mid$(DE$,CurrChar,1)="D" or mid$(DE$,CurrChar,1)="E" then Length=Length+1 endif
