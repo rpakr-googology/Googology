@@ -47,7 +47,7 @@ if Err=0 then
     Output$=Output$+"("+str$(PairSeqA(Term)-1)+","+str$(PairSeqB(Term)-1)+")"
   next Term
   print ("Pair Sequence: "+Output$)
-  REM Convert to 0,D,E,Z
+  REM Convert to 0,D,E,W
   if PairSeqB(1)=1 then DE$="D(" endif
   if PairSeqB(1)=2 then DE$="E(" endif
   for Term=2 to Length
@@ -69,7 +69,7 @@ if Err=0 then
   for CurrChar=1 to len(DE$)
     String$=mid$(DE$,CurrChar,3)
     if String$="D()" then mid$(DE$,CurrChar,3)="0  " endif
-    if String$="E()" then mid$(DE$,CurrChar,3)="Z  " endif
+    if String$="E()" then mid$(DE$,CurrChar,3)="W  " endif
   next CurrChar
   Output$=""
   for CurrChar=1 to len(DE$)
@@ -77,7 +77,7 @@ if Err=0 then
     if not Char$=" " then Output$=Output$+Char$ endif
   next CurrChar
   DE$=Output$
-  print ("0,D,E,Z Expression: "+Output$)
+  print ("0,D,E,W Expression: "+Output$)
   REM Convert to Semicolons
   for CurrChar=1 to len(DE$)
     Char$=mid$(DE$,CurrChar,1)
@@ -99,7 +99,7 @@ if Err=0 then
     Char$=mid$(DE$,CurrChar,1)
     if not(Char$="a" or Char$="b" or Char$="D" or Char$="E") then Output$=Output$+Char$ endif
     if Char$="a" then Output$=Output$+";0)" endif
-    if Char$="b" then Output$=Output$+";Z)" endif
+    if Char$="b" then Output$=Output$+";W)" endif
     if Char$="D" then Output$=Output$+"C" endif
     if Char$="E" then Output$=Output$+"C" endif
   next CurrChar
@@ -175,7 +175,7 @@ if Err=0 then
   Output$=""
   for CurrChar=len(SC$) to 1 step -1
     Char$=mid$(SC$,CurrChar,1)
-    if Char$="0" or Char$="Z" or Char$="C" then Output$=Output$+Char$ endif
+    if Char$="0" or Char$="W" or Char$="C" then Output$=Output$+Char$ endif
   next CurrChar
   print("Postfix: "+Output$)
 endif
