@@ -1,0 +1,109 @@
+REM Input:TON Expression
+REM Output:Standardness of TON Expression
+input ""TONExp$
+print "TON Expression: "+TONExp$
+REM Check Validity of Expression
+for CurrChar=1 to len(TONExp$)
+  CurrChar$=mid$(TONExp$,CurrChar,1)
+  if CurrChar$="C" then
+    CCount=CCount+1
+    dim CPos(CCount)
+    CPos(CCount)=CurrChar
+  endif
+  if CurrChar$="(" then
+    LParenCount=LParenCount+1
+    dim LParenPos(LParenCount)
+    LParenPos(LParenCount)=CurrChar
+  endif
+  if CurrChar$="," then
+    CommaCount=CommaCount+1
+    dim CommaPos(CommaCount)
+    CommaPos(CommaCount)=CurrChar
+  endif
+  if CurrChar$=")" then
+    RParenCount=RParenCount+1
+    dim RParenPos(RParenCount)
+    RParenPos(RParenCount)=CurrChar
+  endif
+  if CurrChar$="0" or CurrChar$="W" then
+    ConstCount=ConstCount+1
+    dim ConstPos(ConstCount)
+    ConstPos(ConstCount)=CurrChar
+  endif
+next CurrChar
+if CCount<>LParenCount then Err=Err+1 endif
+if CCount<>CommaCount then Err=Err+1 endif
+if CCount<>RParenCount then Err=Err+1 endif
+if not CCount-ConstCount+1=0 then Err=Err+1 endif
+if len(TONExp$)>CCount+LParenCount+CommaCount+RParenCount+ConstCount then Err=Err+1 endif
+if Err>0 then
+  print "Expression Invalid"
+else
+  for CurrIndex=1 to CCount
+    if not mid$(TONExp$,CPos(CurrIndex)+1,1)="(" then Err=Err+1 endif
+  next CurrIndex
+  for CurrIndex=1 to LParenCount
+    if not(mid$(TONExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="W" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+  next CurrIndex
+  for CurrIndex=1 to RParenCount
+    if not(mid$(TONExp$,RParenPos(CurrIndex)+1,1)=")" or mid$(TONExp$,RParenPos(CurrIndex)+1,1)=",") then Err=Err+1 endif
+  next CurrIndex
+  for CurrIndex=1 to ConstCount
+    if not(mid$(TONExp$,ConstPos(CurrIndex)+1,1)="," or mid$(TONExp$,ConstPos(CurrIndex)+1,1)=")") then Err=Err+1 endif
+  next CurrIndex
+  for CurrIndex=1 to CommaCount
+    if not(mid$(TONExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="W" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+  next CurrIndex
+  if Err>1 then
+    print "Expression Invalid"
+  else
+    for CurrCIndex=1 to CCount
+      NestLevel=0
+      BaseLayerCommaCount=0
+      for CurrChar=CPos(CurrCIndex) to len(TONExp$)
+        CurrChar$=mid$(TONExp$,CurrChar,1)
+        if CurrChar$="(" then NestLevel=NestLevel+1 endif
+        if CurrChar$=")" then 
+          NestLevel=NestLevel-1
+          if NestLevel=0 then
+            if not BaseLayerCommaCount=1 then Err=Err+1 endif
+            break
+          endif
+        endif
+        if CurrChar$="," and NestLevel=1 then BaseLayerCommaCount=BaseLayerCommaCount+1 endif
+      next CurrChar
+    next CurrCIndex
+    if Err>1 then
+      print "Expression Invalid"
+    else
+    REM List Subterms
+    dim Subterm$((2*len(TONExp$)+3)/5)
+    SubtermCount=1
+    for CurrChar=1 to len(TONExp$)
+      CurrChar$=mid$(TONExp$,CurrChar,1)
+      if CurrChar$="0" or CurrChar$="W" then 
+        Subterm$(SubtermCount)=CurrChar$
+        SubtermCount=SubtermCount+1
+      endif
+      if CurrChar$="C" then
+        NestLevel=0
+        for CurrChar2=CurrChar to len(TONExp$)
+          CurrChar2$=mid$(TONExp$,CurrChar2,1)
+          if CurrChar2$="(" then NestLevel=NestLevel+1 endif
+          if CurrChar2$=")" then
+            NestLevel=NestLevel-1
+            if NestLevel=0 then break endif
+          endif
+        next CurrChar2
+        Subterm$(SubtermCount)=mid$(TONExp$,CurrChar,CurrChar2-CurrChar+1)
+        SubtermCount=SubtermCount+1
+      endif
+    next CurrChar
+    SubtermCount=SubtermCount-1
+    print "Subterms:"
+    for Subterm=1 to SubtermCount
+      print Subterm$(Subterm)
+    next Subterm
+    endif
+  endif
+endif
