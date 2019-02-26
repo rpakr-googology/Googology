@@ -185,6 +185,7 @@ else
         print "Expression Nonstandard"
       else
         REM Rule 3
+        print "Checking Rule 3"
         dim BFB(SubtermCount)
         for CurrSubterm=1 to SubtermCount
           CurrSubterm$=Subterm$(CurrSubterm)
