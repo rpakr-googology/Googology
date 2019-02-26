@@ -76,34 +76,106 @@ else
     if Err>1 then
       print "Expression Invalid"
     else
-    REM List Subterms
-    dim Subterm$((2*len(TONExp$)+3)/5)
-    SubtermCount=1
-    for CurrChar=1 to len(TONExp$)
-      CurrChar$=mid$(TONExp$,CurrChar,1)
-      if CurrChar$="0" or CurrChar$="W" then 
-        Subterm$(SubtermCount)=CurrChar$
-        SubtermCount=SubtermCount+1
-      endif
-      if CurrChar$="C" then
-        NestLevel=0
-        for CurrChar2=CurrChar to len(TONExp$)
-          CurrChar2$=mid$(TONExp$,CurrChar2,1)
-          if CurrChar2$="(" then NestLevel=NestLevel+1 endif
-          if CurrChar2$=")" then
-            NestLevel=NestLevel-1
-            if NestLevel=0 then break endif
+      REM List Subterms
+      dim Subterm$((2*len(TONExp$)+3)/5)
+      SubtermCount=1
+      for CurrChar=1 to len(TONExp$)
+        CurrChar$=mid$(TONExp$,CurrChar,1)
+        if CurrChar$="0" or CurrChar$="W" then 
+          Subterm$(SubtermCount)=CurrChar$
+          SubtermCount=SubtermCount+1
+        endif
+        if CurrChar$="C" then
+          NestLevel=0
+          for CurrChar2=CurrChar to len(TONExp$)
+            CurrChar2$=mid$(TONExp$,CurrChar2,1)
+            if CurrChar2$="(" then NestLevel=NestLevel+1 endif
+            if CurrChar2$=")" then
+              NestLevel=NestLevel-1
+              if NestLevel=0 then break endif
+            endif
+          next CurrChar2
+          Subterm$(SubtermCount)=mid$(TONExp$,CurrChar,CurrChar2-CurrChar+1)
+          SubtermCount=SubtermCount+1
+        endif
+      next CurrChar
+      SubtermCount=SubtermCount-1
+      print
+      print "Subterms:"
+      for CurrSubterm=1 to SubtermCount
+        print Subterm$(CurrSubterm)
+      next CurrSubterm
+      REM Check Standardness
+      Nonstandard=0
+      REM Rule 2 Check
+      for CurrSubterm=1 to SubtermCount
+        CurrSubterm$=Subterm$(CurrSubterm)
+        if left$(CurrSubterm$,1)="C" then
+          NestLevel=0
+          for CurrChar=1 to len(CurrSubterm$)
+            CurrChar$=mid$(CurrSubterm$,CurrChar,1)
+            if CurrChar$="(" then NestLevel=NestLevel+1 endif
+            if CurrChar$=")" then NestLevel=NestLevel-1 endif
+            if CurrChar$="," and NestLevel=1 then break endif
+          next CurrChar
+          if mid$(CurrSubterm$,CurrChar+1,1)="C" then
+            NestLevel=0
+            for CurrChar2=CurrChar+1 to len(CurrSubterm$)
+              CurrChar2$=mid$(CurrSubterm$,CurrChar2,1)
+              if CurrChar2$="(" then NestLevel=NestLevel+1 endif
+              if CurrChar2$=")" then NestLevel=NestLevel-1 endif
+              if CurrChar2$="," and NestLevel=1 then break endif
+            next CurrChar2
+            a$=mid$(CurrSubterm$,3,CurrChar-3)
+            c$=mid$(CurrSubterm$,CurrChar+3,CurrChar2-CurrChar-3)
+            print
+            print "Subterm: "+CurrSubterm$
+            print "a: "+a$
+            print "c: "+c$
+            REM Find Postfix Forms of a and c
+            aPostfix$=""
+            cPostfix$=""
+            for CurrChar=len(a$) to 1 step -1
+              CurrChar$=mid$(a$,CurrChar,1)
+              if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then aPostfix$=aPostfix$+CurrChar$ endif
+            next CurrChar
+            for CurrChar=len(c$) to 1 step -1
+              CurrChar$=mid$(c$,CurrChar,1)
+              if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then cPostfix$=cPostfix$+CurrChar$ endif
+            next CurrChar
+            print "a Postfix: "+aPostfix$
+            print "c Postfix: "+cPostfix$
+            REM Compare a and c
+            REM if a<=c then valid
+            REM if a>c then invalid
+            if len(aPostfix$)>len(cPostfix$) and mid$(aPostfix$,1,len(cPostfix$))=cPostfix$ then
+              Nonstandard=1
+              print "a>c"
+            else
+              if not aPostfix$=cPostfix$ then
+                if not(len(aPostfix$)<len(cPostfix$) and mid$(cPostfix$,1,len(aPostfix$))=aPostfix$) then
+                  for CurrChar=1 to min(len(aPostfix$),len(cPostfix$)) 
+                    aChar$=mid$(aPostfix$,CurrChar,1)
+                    cChar$=mid$(cPostfix$,CurrChar,1)
+                    if not aChar$=cChar$ then break endif
+                  next CurrChar
+                  if aChar$="0" and cChar$="C" then
+                    Nonstandard=1
+                    print "a>c"
+                  endif
+                  if aChar$="W" then
+                    Nonstandard=1
+                    print "a>c"
+                  endif
+                endif
+              endif
+            if Nonstandard=0 then print "a<=c" endif  
+            endif
           endif
-        next CurrChar2
-        Subterm$(SubtermCount)=mid$(TONExp$,CurrChar,CurrChar2-CurrChar+1)
-        SubtermCount=SubtermCount+1
-      endif
-    next CurrChar
-    SubtermCount=SubtermCount-1
-    print "Subterms:"
-    for Subterm=1 to SubtermCount
-      print Subterm$(Subterm)
-    next Subterm
+        endif
+      next CurrSubterm
+      print
+      if Nonstandard=1 then print "Expression Nonstandard" else print "Check BFB" endif
     endif
   endif
 endif
