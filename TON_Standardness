@@ -1,8 +1,11 @@
 REM Input:TON Expression
 REM Output:Standardness of TON Expression
 input ""TONExp$
+input ""Sys
 print "TON Expression: "+TONExp$
+print "System: "+str$(Sys)
 REM Check Validity of Expression
+if not(len(str$(Sys))=1 and str$(Sys)>="0" and str$(Sys)<="9") then Err=Err+1 endif
 for CurrChar=1 to len(TONExp$)
   CurrChar$=mid$(TONExp$,CurrChar,1)
   if CurrChar$="C" then
@@ -36,6 +39,7 @@ if CCount<>CommaCount then Err=Err+1 endif
 if CCount<>RParenCount then Err=Err+1 endif
 if not CCount-ConstCount+1=0 then Err=Err+1 endif
 if len(TONExp$)>CCount+LParenCount+CommaCount+RParenCount+ConstCount then Err=Err+1 endif
+if Sys=0 and instr(TONExp$,"W")>0 then Err=Err+1 endif 
 if Err>0 then
   print "Expression Invalid"
 else
@@ -107,7 +111,9 @@ else
       next CurrSubterm
       REM Check Standardness
       Nonstandard=0
-      REM Rule 2 Check
+      REM Rule 2
+      print
+      print "Checking Rule 2"
       for CurrSubterm=1 to SubtermCount
         CurrSubterm$=Subterm$(CurrSubterm)
         if left$(CurrSubterm$,1)="C" then
@@ -175,7 +181,22 @@ else
         endif
       next CurrSubterm
       print
-      if Nonstandard=1 then print "Expression Nonstandard" else print "Check BFB" endif
+      if Nonstandard=1 then
+        print "Expression Nonstandard"
+      else
+        REM Rule 3
+        dim BFB(SubtermCount)
+        for CurrSubterm=1 to SubtermCount
+          CurrSubterm$=Subterm$(CurrSubterm)
+          if left$(CurrSubterm$,1)="C" then
+            REM Reset BFB-ness
+            for CurrSubterm2=1 to SubtermCount
+              BFB(CurrSubterm2)=-1
+            next CurrSubterm2
+            REM Check 0-BFB-ness
+          endif
+        next CurrSubterm
+      endif
     endif
   endif
 endif
