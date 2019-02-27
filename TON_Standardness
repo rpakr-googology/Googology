@@ -104,10 +104,18 @@ else
         endif
       next CurrChar
       SubtermCount=SubtermCount-1
+      dim SubtermCount(SubtermCount)
+      for CurrSubterm=1 to SubtermCount
+        SubtermCount(CurrSubterm)=(2*len(Subterm$(CurrSubterm))+3)/5
+      next CurrSubterm
       print
       print "Subterms:"
       for CurrSubterm=1 to SubtermCount
-        print Subterm$(CurrSubterm)
+        if SubtermCount(CurrSubterm)=1 then
+          print Subterm$(CurrSubterm)+", 1 Subterm"
+        else
+          print Subterm$(CurrSubterm)+", "+str$(SubtermCount(CurrSubterm))+" Subterms"
+        endif
       next CurrSubterm
       REM Check Standardness
       Nonstandard=0
@@ -154,31 +162,24 @@ else
             REM Compare a and c
             REM if a<=c then valid
             REM if a>c then invalid
-            if len(aPostfix$)>len(cPostfix$) and mid$(aPostfix$,1,len(cPostfix$))=cPostfix$ then
-              Nonstandard=1
-              print "a>c"
-            else
-              if not aPostfix$=cPostfix$ then
-                if not(len(aPostfix$)<len(cPostfix$) and mid$(cPostfix$,1,len(aPostfix$))=aPostfix$) then
-                  for CurrChar=1 to min(len(aPostfix$),len(cPostfix$)) 
-                    aChar$=mid$(aPostfix$,CurrChar,1)
-                    cChar$=mid$(cPostfix$,CurrChar,1)
-                    if not aChar$=cChar$ then break endif
-                  next CurrChar
-                  if aChar$="0" and cChar$="C" then
-                    Nonstandard=1
-                    print "a>c"
-                  endif
-                  if aChar$="W" then
-                    Nonstandard=1
-                    print "a>c"
-                  endif
-                endif
+            if not aPostfix$=cPostfix$ then
+              aPostfix$=aPostfix$+" "
+              cPostfix$=cPostfix$+" "
+              for CurrChar=1 to min(len(aPostfix$),len(cPostfix$))
+                aChar$=mid$(aPostfix$,CurrChar,1)
+                cChar$=mid$(cPostfix$,CurrChar,1)
+                if not aChar$=cChar$ then break endif
+              next CurrChar
+              REM " "<"C"<"0"<"W"
+              if aChar$="W" or cChar$=" " or (aChar$="0" and cChar$="C") then
+                Nonstandard=1
+                print "a>c"
               endif
-            if Nonstandard=0 then print "a<=c" endif  
             endif
+            if Nonstandard=0 then print "a<=c" endif
           endif
         endif
+        if Nonstandard=1 then break endif
       next CurrSubterm
       print
       if Nonstandard=1 then
@@ -190,13 +191,74 @@ else
         for CurrSubterm=1 to SubtermCount
           CurrSubterm$=Subterm$(CurrSubterm)
           if left$(CurrSubterm$,1)="C" then
+            print
+            print
+            print "Subterm: "+CurrSubterm$
+            print "Checking if "+Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$+" or not."
             REM Reset BFB-ness
             for CurrSubterm2=1 to SubtermCount
               BFB(CurrSubterm2)=-1
             next CurrSubterm2
             REM Check 0-BFB-ness
+            print
+            print "0-BFB"
+            REM Find Postfix Form of CurrSubterm$
+            CurrSubtermPostfix$=""
+            for CurrChar=len(CurrSubterm$) to 1 step -1
+              CurrChar$=mid$(CurrSubterm$,CurrChar,1)
+              if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubtermPostfix$=CurrSubtermPostfix$+CurrChar$ endif
+            next CurrChar
+            REM Loop: All Subterms of CurrSubterm$
+            BFBCount=0
+            for CurrSubterm2=CurrSubterm to CurrSubterm+SubtermCount(CurrSubterm)-1
+              CurrSubterm2$=Subterm$(CurrSubterm2)
+              REM Find Postfix Forms of CurrSubterm2$
+              CurrSubterm2Postfix$=""
+              for CurrChar=len(CurrSubterm2$) to 1 step -1
+                CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
+                if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubterm2Postfix$=CurrSubterm2Postfix$+CurrChar$ endif
+              next CurrChar
+              REM Compare CurrSubterm$ and CurrSubterm2$
+              REM If CurrSubterm2$ is smaller it is 0-BFB from <CurrSuberm$
+              if not CurrSubtermPostfix$=CurrSubterm2Postfix$ then
+                CurrSubtermPostfix$=CurrSubtermPostfix$+" "
+                CurrSubterm2Postfix$=CurrSubterm2Postfix$+" "
+                for CurrChar=1 to min(len(CurrSubtermPostfix$),len(CurrSubterm2Postfix$))
+                  CurrSubtermChar$=mid$(CurrSubtermPostfix$,CurrChar,1)
+                  CurrSubterm2Char$=mid$(CurrSubterm2Postfix$,CurrChar,1)
+                  if not CurrSubtermChar$=CurrSubterm2Char$ then break endif
+                next CurrChar
+                REM " "<"C"<"0"<"W"
+                if CurrSubtermChar$="W" or CurrSubterm2Char$=" " or (CurrSubtermChar$="0" and CurrSubterm2Char$="C") then
+                  BFB(CurrSubterm2)=0
+                  BFBCount=BFBCount+1
+                  print CurrSubterm2$
+                endif
+              endif
+            next CurrSubterm2
+            if BFBCount=0 then print "None" endif
+            REM Check whether a is 0-BFB
+            if BFB(CurrSubterm+1)=0 then
+              print
+              print Subterm$(CurrSubterm+1)+" is 0-BFB from <"+CurrSubterm$
+              if Sys>0 then
+                print Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$
+              endif
+            else
+              if Sys=0 then
+                print Subterm$(CurrSubterm+1)+" is not 0-BFB from <"+CurrSubterm$
+                print CurrSubterm$+" is nonstandard"
+                Nonstandard=1
+              else
+                print
+                print "1-BFB"
+                REM Work-in-progress
+              endif
+            endif
           endif
+          if Nonstandard=1 then break endif
         next CurrSubterm
+        if Nonstandard=1 then print "Expression Nonstandard" endif 
       endif
     endif
   endif
