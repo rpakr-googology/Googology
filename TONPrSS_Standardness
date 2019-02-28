@@ -73,7 +73,7 @@ if Err=0 then
         Err=1
         break
       endif
-      if SubSeq(CurrTerm,CurrSubSeq)<SubSeq(CurrTerm,CurrSubSeq2) then
+      if Difference=1 and SubSeq(CurrTerm,CurrSubSeq)<SubSeq(CurrTerm,CurrSubSeq2) then
         Err=1
         break
       endif
