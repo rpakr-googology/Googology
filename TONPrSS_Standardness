@@ -1,0 +1,499 @@
+REM Input:TONPrSS
+REM Output:Standardness of TONPrSS
+dim CommaPos(999),Substring$(999)
+input ""Seq$
+input ""Sys
+CurrTerm=1
+for CurrChar=1 to len(Seq$)
+  Char$=mid$(Seq$,CurrChar,1)
+  if Char$="," then CurrTerm=CurrTerm+1 endif
+  if Char$>="0" and Char$<="9" then 
+  dim PriSeq(CurrTerm)
+    PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(Char$)
+  endif
+next CurrChar
+Length=CurrTerm
+LargestDifference=1
+if PriSeq(1)>2 or PriSeq(1)<1 then Err=1 endif
+for CurrTerm=2 to Length
+  if PriSeq(CurrTerm)-PriSeq(CurrTerm-1)>2 then Err=1 endif
+  if PriSeq(CurrTerm)-PriSeq(CurrTerm-1)=2 then LargestDifference=2 endif
+next CurrTerm
+if LargestDifference=2 and Sys=0 then Sys=2 endif 
+if Err=1 then print "Sequence Invalid" endif
+if Err=0 then
+  REM Output sequence
+  for CurrTerm=1 to Length
+    Output$=Output$+str$(PriSeq(CurrTerm))
+    Output$=Output$+","
+  next CurrTerm
+  print "Sequence: "+left$(Output$,len(Output$)-1)
+  print "System: "+str$(Sys)
+  print
+  REM Divide into subsequences
+  SubSeqCount=0
+  LastRoot=2
+  LongestSubSeqLength=1
+  for CurrTerm=1 to Length
+    if PriSeq(CurrTerm)<=LastRoot then
+      LastRoot=PriSeq(CurrTerm)
+      SubSeqCount=SubSeqCount+1
+      CurrSubSeqLength=1
+      dim SubSeqLength(SubSeqCount)
+      SubSeqLength(SubSeqCount)=1
+    else
+      CurrSubSeqLength=CurrSubSeqLength+1
+      if CurrSubSeqLength>LongestSubSeqLength then LongestSubSeqLength=CurrSubSeqLength endif
+      SubSeqLength(SubSeqCount)=SubSeqLength(SubSeqCount)+1
+    endif
+    dim SubSeq(LongestSubSeqLength,SubSeqCount)
+    SubSeq(CurrSubSeqLength,SubSeqCount)=PriSeq(CurrTerm)
+  next CurrTerm
+  REM Output subsequences
+  print "Subsequences:"
+  for CurrSubSeq=1 to SubSeqCount
+    Output$=""
+    for CurrTerm=1 to SubSeqLength(CurrSubSeq)
+      Output$=Output$+str$(SubSeq(CurrTerm,CurrSubSeq))+","
+    next CurrTerm
+    print left$(Output$,len(Output$)-1)
+  next CurrSubSeq
+  REM Compare subequences
+  for CurrSubSeq=1 to SubSeqCount
+    for CurrSubSeq2=CurrSubSeq+1 to SubSeqCount
+      REM If SubSeq CurrSubSeq2 is larger than SubSeq CurrSubSeq then sequence is invalid
+      Difference=0
+      for CurrTerm=1 to min(SubSeqLength(CurrSubSeq),SubSeqLength(CurrSubSeq2))
+        if not SubSeq(CurrTerm,CurrSubSeq)=SubSeq(CurrTerm,CurrSubSeq2) then
+          Difference=1
+          break
+        endif
+      next CurrTerm
+      if Difference=0 and SubSeqLength(CurrSubSeq)<SubSeqLength(CurrSubSeq2) then
+        Err=1
+        break
+      endif
+      if SubSeq(CurrTerm,CurrSubSeq)<SubSeq(CurrTerm,CurrSubSeq2) then
+        Err=1
+        break
+      endif
+    next CurrSubSeq2
+    if Err=1 then break endif
+  next CurrSubSeq
+  print
+  if Err=1 then
+    print "Sequence Invalid"
+  else
+    REM Check standardness of subsequences
+    for CurrSubSeq=1 to SubSeqCount
+      Output$=""
+      for CurrTerm=1 to SubSeqLength(CurrSubSeq)
+        Output$=Output$+str$(SubSeq(CurrTerm,CurrSubSeq))+","
+      next CurrTerm
+      print "Checking if sequence "+left$(Output$,len(Output$)-1)+" is standard or not."
+      print
+      print "Sequence: "+left$(Output$,len(Output$)-1)
+      CurrSubSeqLength=SubSeqLength(CurrSubSeq)
+      dim CurrSubSeq(CurrSubSeqLength)
+      for CurrTerm=1 to CurrSubSeqLength
+        CurrSubSeq(CurrTerm)=SubSeq(CurrTerm,CurrSubSeq)
+      next CurrTerm
+      REM Convert to PSS
+      dim PairSeqA(CurrSubSeqLength),PairSeqB(CurrSubSeqLength),Parent(CurrSubSeqLength)
+      for CurrTerm=2 to CurrSubSeqLength
+        for CurrTerm2=CurrTerm to 1 step -1
+          if CurrSubSeq(CurrTerm2)<CurrSubSeq(CurrTerm) then 
+            Parent(CurrTerm)=CurrTerm2
+            break
+          endif
+        next CurrTerm2
+      next CurrTerm
+      PairSeqA(1)=1
+      PairSeqB(1)=CurrSubSeq(1)
+      for CurrTerm=2 to CurrSubSeqLength
+        PairSeqA(CurrTerm)=PairSeqA(Parent(CurrTerm))+1
+        PairSeqB(CurrTerm)=CurrSubSeq(CurrTerm)-CurrSubSeq(Parent(CurrTerm))
+      next CurrTerm
+      REM Output PSS
+      Output$=""
+      for CurrTerm=1 to CurrSubSeqLength
+        Output$=Output$+"("+str$(PairSeqA(CurrTerm)-1)+","+str$(PairSeqB(CurrTerm)-1)+")"
+      next CurrTerm
+      print ("Pair Sequence: "+Output$)
+      REM Convert to 0,D,E,W
+      if PairSeqB(1)=1 then DE$="D(" endif
+      if PairSeqB(1)=2 then DE$="E(" endif
+      for CurrTerm=2 to CurrSubSeqLength
+        Distance=CurrTerm-Parent(CurrTerm)
+        Difference=PairSeqA(CurrTerm-1)-PairSeqA(CurrTerm)
+        if Distance=1 and PairSeqB(CurrTerm)=1 then DE$=DE$+"D(" endif
+        if Distance=1 and PairSeqB(CurrTerm)=2 then DE$=DE$+"E(" endif
+        if Distance>1 then 
+          for ParenCount=1 to Difference+1
+            DE$=DE$+")"
+          next ParenCount
+          if PairSeqB(CurrTerm)=1 then DE$=DE$+",D(" endif
+          if PairSeqB(CurrTerm)=2 then DE$=DE$+",E(" endif
+        endif
+      next CurrTerm
+      for ParenCount=1 to PairSeqA(CurrSubSeqLength)
+        DE$=DE$+")"
+      next ParenCount
+      for CurrChar=1 to len(DE$)
+        String$=mid$(DE$,CurrChar,3)
+        if String$="D()" then mid$(DE$,CurrChar,3)="0  " endif
+        if String$="E()" then mid$(DE$,CurrChar,3)="W  " endif
+      next CurrChar
+      Output$=""
+      for CurrChar=1 to len(DE$)
+        Char$=mid$(DE$,CurrChar,1)
+        if not Char$=" " then Output$=Output$+Char$ endif
+      next CurrChar
+      DE$=Output$
+      print ("0,D,E,W Expression: "+Output$)
+      REM Convert to semicolons
+      for CurrChar=1 to len(DE$)
+        Char$=mid$(DE$,CurrChar,1)
+        if Char$="D" or Char$="E" then
+          Level=0
+          for CurrChar2=CurrChar to len(DE$)
+            Char2$=mid$(DE$,CurrChar2,1)
+            if Char2$="(" then Level=Level+1 endif
+            if Char2$=")" or Char2$="a" or Char2$="b" then 
+              Level=Level-1
+              if Level=0 then break endif
+            endif
+          next CurrChar2
+          if Char$="D" then mid$(DE$,CurrChar2,1)="a" else mid$(DE$,CurrChar2,1)="b" endif
+        endif
+      next CurrChar
+      Output$=""
+      for CurrChar=1 to len(DE$)
+        Char$=mid$(DE$,CurrChar,1)
+        if not(Char$="a" or Char$="b" or Char$="D" or Char$="E") then Output$=Output$+Char$ endif
+        if Char$="a" then Output$=Output$+";0)" endif
+        if Char$="b" then Output$=Output$+";W)" endif
+        if Char$="D" then Output$=Output$+"C" endif
+        if Char$="E" then Output$=Output$+"C" endif
+      next CurrChar
+      SC$=Output$
+      print ("Semicolons: "+Output$)
+      REM Convert to TON
+      Exp$=""
+      for CurrChar=1 to len(SC$)
+        Char$=mid$(SC$,CurrChar,1)
+        if Char$="," then Exp$=Exp$+",   " else Exp$=Exp$+Char$ endif
+      next CurrChar
+      SC$=Exp$
+      REM Search left for C
+      for CurrChar=len(SC$) to 1 step -1
+        Char$=mid$(SC$,CurrChar,1)
+        if Char$="C" then
+          REM Reset comma positions
+          for Index=1 to 99
+            CommaPos(Index)=0
+          next Index
+          CommaCount=0
+          REM Search right for commas and corresponding parenthesis
+          Level=0
+          for CurrChar2=CurrChar to len(SC$)
+            Char2$=mid$(SC$,CurrChar2,1)
+            if Char2$="," and Level=1 then
+              CommaCount=CommaCount+1
+              CommaPos(CommaCount)=CurrChar2
+            endif
+            if Char2$="(" then Level=Level+1 endif
+            if Char2$=")" then 
+              Level=Level-1
+              if Level=0 then break endif
+            endif
+          next CurrChar2
+          CPos=CurrChar
+          SemicolonPos=CurrChar2-2
+          RParenPos=CurrChar2
+          if CommaCount=0 then mid$(SC$,SemicolonPos,1)="," else
+            REM Reset substrings
+            for Index=1 to 99
+              Substring$(Index)=""
+            next Index
+            REM Extract substrings
+            Substring$(1)=mid$(SC$,CPos+2,CommaPos(1)-CPos-2)
+            for CommaIndex=2 to CommaCount
+              Substring$(CommaIndex)=mid$(SC$,CommaPos(CommaIndex-1)+1,CommaPos(CommaIndex)-CommaPos(CommaIndex-1)-1)
+            next CommaIndex
+            Substring$(CommaCount+1)=mid$(SC$,CommaPos(CommaCount)+1,SemicolonPos-CommaPos(CommaCount)-1)
+            SubstringCount=CommaCount+1
+            Second$=mid$(SC$,RParenPos-1,1)
+            REM Reset Replacement String
+            Replacement$=""
+            REM Compute replacement
+            for SubstringIndex=1 to SubstringCount
+              Replacement$=Replacement$+"C("+Substring$(SubstringCount-SubstringIndex+1)+","
+            next SubstringIndex
+            Replacement$=Replacement$+Second$
+            for ParenCount=1 to SubstringCount
+              Replacement$=Replacement$+")"
+            next ParenCount
+            Subst$=""
+            for CurrChar2=1 to len(Replacement$)
+              Char2$=mid$(Replacement$,CurrChar2,1)
+              if not Char2$=" " then Subst$=Subst$+Char2$ endif
+            next CurrChar2
+            REM Replacement
+            mid$(SC$,CPos,RParenPos-CPos+1)=Subst$
+          endif
+        endif
+      next CurrChar
+      print("TON: "+SC$)
+      print
+      REM Checking standardness of TON expression
+      TONExp$=SC$
+      REM List subterms
+      dim Subterm$((2*len(TONExp$)+3)/5)
+      SubtermCount=1
+      for CurrChar=1 to len(TONExp$)
+        CurrChar$=mid$(TONExp$,CurrChar,1)
+        if CurrChar$="0" or CurrChar$="W" then 
+          Subterm$(SubtermCount)=CurrChar$
+          SubtermCount=SubtermCount+1
+        endif
+        if CurrChar$="C" then
+          NestLevel=0
+          for CurrChar2=CurrChar to len(TONExp$)
+            CurrChar2$=mid$(TONExp$,CurrChar2,1)
+            if CurrChar2$="(" then NestLevel=NestLevel+1 endif
+            if CurrChar2$=")" then
+              NestLevel=NestLevel-1
+              if NestLevel=0 then break endif
+            endif
+          next CurrChar2
+          Subterm$(SubtermCount)=mid$(TONExp$,CurrChar,CurrChar2-CurrChar+1)
+          SubtermCount=SubtermCount+1
+        endif
+      next CurrChar
+      SubtermCount=SubtermCount-1
+      dim SubtermCount(SubtermCount)
+      for CurrSubterm=1 to SubtermCount
+        SubtermCount(CurrSubterm)=(2*len(Subterm$(CurrSubterm))+3)/5
+      next CurrSubterm
+      print "TON Expression: "+TONExp$
+      print
+      print "Subterms:"
+      for CurrSubterm=1 to SubtermCount
+        if SubtermCount(CurrSubterm)=1 then
+          print Subterm$(CurrSubterm)+", 1 Subterm"
+        else
+          print Subterm$(CurrSubterm)+", "+str$(SubtermCount(CurrSubterm))+" Subterms"
+        endif
+      next CurrSubterm
+      REM Check Standardness
+      Nonstandard=0
+      REM Rule 2
+      print
+      print "Checking Rule 2"
+      for CurrSubterm=1 to SubtermCount
+        CurrSubterm$=Subterm$(CurrSubterm)
+        if left$(CurrSubterm$,1)="C" then
+          NestLevel=0
+          for CurrChar=1 to len(CurrSubterm$)
+            CurrChar$=mid$(CurrSubterm$,CurrChar,1)
+            if CurrChar$="(" then NestLevel=NestLevel+1 endif
+            if CurrChar$=")" then NestLevel=NestLevel-1 endif
+            if CurrChar$="," and NestLevel=1 then break endif
+          next CurrChar
+          if mid$(CurrSubterm$,CurrChar+1,1)="C" then
+            NestLevel=0
+            for CurrChar2=CurrChar+1 to len(CurrSubterm$)
+              CurrChar2$=mid$(CurrSubterm$,CurrChar2,1)
+              if CurrChar2$="(" then NestLevel=NestLevel+1 endif
+              if CurrChar2$=")" then NestLevel=NestLevel-1 endif
+              if CurrChar2$="," and NestLevel=1 then break endif
+            next CurrChar2
+            a$=mid$(CurrSubterm$,3,CurrChar-3)
+            c$=mid$(CurrSubterm$,CurrChar+3,CurrChar2-CurrChar-3)
+            print
+            print "Subterm: "+CurrSubterm$
+            print "a: "+a$
+            print "c: "+c$
+            REM Find Postfix Forms of a and c
+            aPostfix$=""
+            cPostfix$=""
+            for CurrChar=len(a$) to 1 step -1
+              CurrChar$=mid$(a$,CurrChar,1)
+              if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then aPostfix$=aPostfix$+CurrChar$ endif
+            next CurrChar
+            for CurrChar=len(c$) to 1 step -1
+              CurrChar$=mid$(c$,CurrChar,1)
+              if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then cPostfix$=cPostfix$+CurrChar$ endif
+            next CurrChar
+            print "a Postfix: "+aPostfix$
+            print "c Postfix: "+cPostfix$
+            REM Compare a and c
+            REM if a<=c then valid
+            REM if a>c then invalid
+            if not aPostfix$=cPostfix$ then
+              aPostfix$=aPostfix$+" "
+              cPostfix$=cPostfix$+" "
+              for CurrChar=1 to min(len(aPostfix$),len(cPostfix$))
+                aChar$=mid$(aPostfix$,CurrChar,1)
+                cChar$=mid$(cPostfix$,CurrChar,1)
+                if not aChar$=cChar$ then break endif
+              next CurrChar
+              REM " "<"C"<"0"<"W"
+              if aChar$="W" or cChar$=" " or (aChar$="0" and cChar$="C") then
+                Nonstandard=1
+                print "a>c"
+              endif
+            endif
+            if right$(aPostfix$,1)=" " then aPostfix$=left$(aPostfix$,len(aPostfix$)-1) endif
+            if right$(cPostfix$,1)=" " then cPostfix$=left$(cPostfix$,len(cPostfix$)-1) endif
+            if Nonstandard=0 then print "a<=c" endif
+          endif
+        endif
+        if Nonstandard=1 then break endif
+      next CurrSubterm
+      print
+      if Nonstandard=1 then
+        print "Expression Nonstandard"
+      else
+        REM Rule 3
+        print "Checking Rule 3"
+        print
+        dim BFB(SubtermCount)
+        for CurrSubterm=1 to SubtermCount
+          CurrSubterm$=Subterm$(CurrSubterm)
+          if left$(CurrSubterm$,1)="C" then
+            print "Subterm: "+CurrSubterm$
+            print "Checking if "+Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$+" or not."
+            REM Reset BFB-ness
+            for CurrSubterm2=1 to SubtermCount
+              BFB(CurrSubterm2)=-1
+            next CurrSubterm2
+            REM Check 0-BFB-ness
+            print
+            print "0-BFB"
+            REM Find postfix Form of currSubterm$
+            CurrSubtermPostfix$=""
+            for CurrChar=len(CurrSubterm$) to 1 step -1
+              CurrChar$=mid$(CurrSubterm$,CurrChar,1)
+              if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubtermPostfix$=CurrSubtermPostfix$+CurrChar$ endif
+            next CurrChar
+            BFBCount=0
+            REM Loop: all Subterms of CurrSubterm$
+            for CurrSubterm2=CurrSubterm to CurrSubterm+SubtermCount(CurrSubterm+1)
+              CurrSubterm2$=Subterm$(CurrSubterm2)
+              REM Find postfix Form of CurrSubterm2$
+              CurrSubterm2Postfix$=""
+              for CurrChar=len(CurrSubterm2$) to 1 step -1
+                CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
+                if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubterm2Postfix$=CurrSubterm2Postfix$+CurrChar$ endif
+              next CurrChar
+              REM Compare CurrSubterm$ and CurrSubterm2$
+              REM If CurrSubterm2$ is smaller it is 0-BFB from <CurrSuberm$
+              if not CurrSubtermPostfix$=CurrSubterm2Postfix$ then
+                CurrSubtermPostfix$=CurrSubtermPostfix$+" "
+                CurrSubterm2Postfix$=CurrSubterm2Postfix$+" "
+                for CurrChar=1 to min(len(CurrSubtermPostfix$),len(CurrSubterm2Postfix$))
+                  CurrSubtermChar$=mid$(CurrSubtermPostfix$,CurrChar,1)
+                  CurrSubterm2Char$=mid$(CurrSubterm2Postfix$,CurrChar,1)
+                  if not CurrSubtermChar$=CurrSubterm2Char$ then break endif
+                next CurrChar
+                REM " "<"C"<"0"<"W"
+                if CurrSubtermChar$="W" or CurrSubterm2Char$=" " or (CurrSubtermChar$="0" and CurrSubterm2Char$="C") then
+                  BFB(CurrSubterm2)=0
+                  BFBCount=BFBCount+1
+                  print CurrSubterm2$
+                endif
+              endif
+              if right$(CurrSubtermPostfix$,1)=" " then CurrSubtermPostfix$=left$(CurrSubtermPostfix$,len(CurrSubtermPostfix$)-1) endif
+              if right$(CurrSubterm2Postfix$,1)=" " then CurrSubterm2Postfix$=left$(CurrSubterm2Postfix$,len(CurrSubterm2Postfix$)-1) endif
+            next CurrSubterm2
+            if BFBCount=0 then print "None" endif
+            REM Check whether a is 0-BFB
+            if BFB(CurrSubterm+1)=0 then
+              print
+              print Subterm$(CurrSubterm+1)+" is 0-BFB from <"+CurrSubterm$
+              if Sys>0 then
+                print Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$
+              endif
+              print
+            else
+              if Sys=0 then
+                print Subterm$(CurrSubterm+1)+" is not 0-BFB from <"+CurrSubterm$
+                print CurrSubterm$+" is nonstandard"
+                Nonstandard=1
+              else
+                for k=1 to Sys
+                  BFBCount=0
+                  print
+                  print str$(k)+"-BFB"
+                  REM Check k-BFB-ness
+                  for CurrSubterm2=CurrSubterm+1 to CurrSubterm+SubtermCount(CurrSubterm+1)
+                    CurrSubterm2$=Subterm$(CurrSubterm2)
+                    BFBCheck=0
+                    REM Find postfix form of CurrSubterm2
+                    CurrSubterm2Postfix$=""
+                    for CurrChar=len(CurrSubterm2$) to 1 step -1
+                      CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
+                      if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubterm2Postfix$=CurrSubterm2Postfix$+CurrChar$ endif
+                    next CurrChar
+                    REM Check whether CurrSubterm2$ is k-BFB
+                    for CurrSubterm3=CurrSubterm2 to CurrSubterm2+SubtermCount(CurrSubterm2)-1
+                      REM Skip if CurrSubterm3$ is (<k)-BFB from <CurrSubterm
+                      if BFB(CurrSubterm3)>-1 then CurrSubterm3=CurrSubterm3+SubtermCount(CurrSubterm3) endif
+                      CurrSubterm3$=Subterm$(CurrSubterm3)
+                      REM Find postfix form of CurrSubterm3
+                      CurrSubterm3Postfix$=""
+                      for CurrChar=len(CurrSubterm3$) to 1 step -1
+                        CurrChar$=mid$(CurrSubterm3$,CurrChar,1)
+                        if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubterm3Postfix$=CurrSubterm3Postfix$+CurrChar$ endif
+                      next CurrChar
+                      REM Compare CurrSubterm2$ and CurrSubterm3$
+                      REM If CurrSubterm2$<CurrSubterm3 then CurrSubterm2$ is not k-BFB
+                      if not CurrSubterm2Postfix$=CurrSubterm3Postfix$ then
+                        CurrSubterm2Postfix$=CurrSubterm2Postfix$+" "
+                        CurrSubterm3Postfix$=CurrSubterm3Postfix$+" "
+                        for CurrChar=1 to min(len(CurrSubterm2Postfix$),len(CurrSubterm3Postfix$))
+                          CurrSubterm2Char$=mid$(CurrSubterm2Postfix$,CurrChar,1)
+                          CurrSubterm3Char$=mid$(CurrSubterm3Postfix$,CurrChar,1)
+                          if not CurrSubterm2Char$=CurrSubterm3Char$ then break endif
+                        next CurrChar
+                        REM " "<"C"<"0"<"W"
+                        if CurrSubterm3Char$="W" or CurrSubterm2Char$=" " or (CurrSubterm3Char$="0" and CurrSubterm2Char$="C") then
+                          BFBCheck=1
+                        endif
+                      endif
+                      if right$(CurrSubterm2Postfix$,1)=" " then CurrSubterm2Postfix$=left$(CurrSubterm2Postfix$,len(CurrSubterm2Postfix$)-1) endif
+                      if right$(CurrSubterm3Postfix$,1)=" " then CurrSubterm3Postfix$=left$(CurrSubterm3Postfix$,len(CurrSubterm3Postfix$)-1) endif
+                      if BFBCheck=1 then break endif
+                    next CurrSubterm3
+                    if BFBCheck=0 and BFB(CurrSubterm2)=-1 then
+                      BFB(CurrSubterm2)=k
+                      BFBCount=BFBCount+1
+                      print CurrSubterm2$
+                    endif
+                  next CurrSubterm2
+                  if BFB(CurrSubterm+1)=k then
+                    print
+                    print Subterm$(CurrSubterm+1)+" is "+str$(k)+"-BFB from <"+CurrSubterm$
+                    if not k=Sys then print Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$ endif
+                    print
+                    break
+                  endif
+                  if BFBCount=0 then print "None" endif
+                next k
+                if BFB(CurrSubterm+1)<0 then Nonstandard=1 endif
+              endif
+            endif
+          endif
+          if Nonstandard=1 then break endif
+        next CurrSubterm
+        if Nonstandard=1 then print "Expression nonstandard." else print "Expression standard." endif 
+      endif
+      print
+      print
+      if Nonstandard=1 then break endif
+    next CurrSubSeq
+    if Nonstandard=1 then print "Sequence nonstandard." else print "Sequence standard." endif
+  endif
+endif
