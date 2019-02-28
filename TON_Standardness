@@ -251,6 +251,7 @@ else
               if Sys>0 then
                 print Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$
               endif
+              print
             else
               if Sys=0 then
                 print Subterm$(CurrSubterm+1)+" is not 0-BFB from <"+CurrSubterm$
@@ -307,7 +308,13 @@ else
                       print CurrSubterm2$
                     endif
                   next CurrSubterm2
-                  if BFB(CurrSubterm+1)=k then break endif
+                  if BFB(CurrSubterm+1)=k then
+                    print
+                    print Subterm$(CurrSubterm+1)+" is "+str$(k)+"-BFB from <"+CurrSubterm$
+                    if not k=Sys then print Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$ endif
+                    print
+                    break
+                  endif
                   if BFBCount=0 then print "None" endif
                 next k
                 if BFB(CurrSubterm+1)<0 then Nonstandard=1 endif
