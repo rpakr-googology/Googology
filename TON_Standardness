@@ -3,7 +3,6 @@ REM Output:Standardness of TON Expression
 input ""TONExp$
 input ""Sys
 print "TON Expression: "+TONExp$
-print "System: "+str$(Sys)
 REM Check Validity of Expression
 if not(len(str$(Sys))=1 and str$(Sys)>="0" and str$(Sys)<="9") then Err=Err+1 endif
 for CurrChar=1 to len(TONExp$)
@@ -39,7 +38,12 @@ if CCount<>CommaCount then Err=Err+1 endif
 if CCount<>RParenCount then Err=Err+1 endif
 if not CCount-ConstCount+1=0 then Err=Err+1 endif
 if len(TONExp$)>CCount+LParenCount+CommaCount+RParenCount+ConstCount then Err=Err+1 endif
-if Sys=0 and instr(TONExp$,"W")>0 then Err=Err+1 endif 
+if instr(TONExp$,"W")>0 then
+  if Sys=0 then Sys=2 endif
+  print "System: "+str$(Sys)
+else
+  Sys=0
+endif
 if Err>0 then
   print "Expression Invalid"
 else
@@ -176,6 +180,8 @@ else
                 print "a>c"
               endif
             endif
+            if right$(aPostfix$,1)=" " then aPostfix$=left$(aPostfix$,len(aPostfix$)-1) endif
+            if right$(cPostfix$,1)=" " then cPostfix$=left$(cPostfix$,len(cPostfix$)-1) endif
             if Nonstandard=0 then print "a<=c" endif
           endif
         endif
@@ -192,7 +198,6 @@ else
           CurrSubterm$=Subterm$(CurrSubterm)
           if left$(CurrSubterm$,1)="C" then
             print
-            print
             print "Subterm: "+CurrSubterm$
             print "Checking if "+Subterm$(CurrSubterm+1)+" is "+str$(Sys)+"-BFB from <"+CurrSubterm$+" or not."
             REM Reset BFB-ness
@@ -208,11 +213,11 @@ else
               CurrChar$=mid$(CurrSubterm$,CurrChar,1)
               if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubtermPostfix$=CurrSubtermPostfix$+CurrChar$ endif
             next CurrChar
-            REM Loop: All Subterms of CurrSubterm$
             BFBCount=0
-            for CurrSubterm2=CurrSubterm to CurrSubterm+SubtermCount(CurrSubterm)-1
+            REM Loop: All Subterms of CurrSubterm$
+            for CurrSubterm2=CurrSubterm to CurrSubterm+SubtermCount(CurrSubterm+1)
               CurrSubterm2$=Subterm$(CurrSubterm2)
-              REM Find Postfix Forms of CurrSubterm2$
+              REM Find Postfix Form of CurrSubterm2$
               CurrSubterm2Postfix$=""
               for CurrChar=len(CurrSubterm2$) to 1 step -1
                 CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
@@ -235,6 +240,8 @@ else
                   print CurrSubterm2$
                 endif
               endif
+              if right$(CurrSubtermPostfix$,1)=" " then CurrSubtermPostfix$=left$(CurrSubtermPostfix$,len(CurrSubtermPostfix$)-1) endif
+              if right$(CurrSubterm2Postfix$,1)=" " then CurrSubterm2Postfix$=left$(CurrSubterm2Postfix$,len(CurrSubterm2Postfix$)-1) endif
             next CurrSubterm2
             if BFBCount=0 then print "None" endif
             REM Check whether a is 0-BFB
@@ -250,15 +257,67 @@ else
                 print CurrSubterm$+" is nonstandard"
                 Nonstandard=1
               else
-                print
-                print "1-BFB"
-                REM Work-in-progress
+                for k=1 to Sys
+                  BFBCount=0
+                  print
+                  print str$(k)+"-BFB"
+                  REM Check k-BFB-ness
+                  for CurrSubterm2=CurrSubterm+1 to CurrSubterm+SubtermCount(CurrSubterm+1)
+                    CurrSubterm2$=Subterm$(CurrSubterm2)
+                    BFBCheck=0
+                    REM Find Postfix Form of CurrSubterm2
+                    CurrSubterm2Postfix$=""
+                    for CurrChar=len(CurrSubterm2$) to 1 step -1
+                      CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
+                      if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubterm2Postfix$=CurrSubterm2Postfix$+CurrChar$ endif
+                    next CurrChar
+                    REM Check whether CurrSubterm2$ is k-BFB
+                    for CurrSubterm3=CurrSubterm2 to CurrSubterm2+SubtermCount(CurrSubterm2)-1
+                      REM Skip if CurrSubterm3$ is (<k)-BFB from <CurrSubterm
+                      if BFB(CurrSubterm3)>-1 then CurrSubterm3=CurrSubterm3+SubtermCount(CurrSubterm3) endif
+                      CurrSubterm3$=Subterm$(CurrSubterm3)
+                      REM Find Postfix Form of CurrSubterm3
+                      CurrSubterm3Postfix$=""
+                      for CurrChar=len(CurrSubterm3$) to 1 step -1
+                        CurrChar$=mid$(CurrSubterm3$,CurrChar,1)
+                        if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubterm3Postfix$=CurrSubterm3Postfix$+CurrChar$ endif
+                      next CurrChar
+                      REM Compare CurrSubterm2$ and CurrSubterm3$
+                      REM If CurrSubterm2$<CurrSubterm3 then CurrSubterm2$ is not k-BFB
+                      if not CurrSubterm2Postfix$=CurrSubterm3Postfix$ then
+                        CurrSubterm2Postfix$=CurrSubterm2Postfix$+" "
+                        CurrSubterm3Postfix$=CurrSubterm3Postfix$+" "
+                        for CurrChar=1 to min(len(CurrSubterm2Postfix$),len(CurrSubterm3Postfix$))
+                          CurrSubterm2Char$=mid$(CurrSubterm2Postfix$,CurrChar,1)
+                          CurrSubterm3Char$=mid$(CurrSubterm3Postfix$,CurrChar,1)
+                          if not CurrSubterm2Char$=CurrSubterm3Char$ then break endif
+                        next CurrChar
+                        REM " "<"C"<"0"<"W"
+                        if CurrSubterm3Char$="W" or CurrSubterm2Char$=" " or (CurrSubterm3Char$="0" and CurrSubterm2Char$="C") then
+                          BFBCheck=1
+                        endif
+                      endif
+                      if right$(CurrSubterm2Postfix$,1)=" " then CurrSubterm2Postfix$=left$(CurrSubterm2Postfix$,len(CurrSubterm2Postfix$)-1) endif
+                      if right$(CurrSubterm3Postfix$,1)=" " then CurrSubterm3Postfix$=left$(CurrSubterm3Postfix$,len(CurrSubterm3Postfix$)-1) endif
+                      if BFBCheck=1 then break endif
+                    next CurrSubterm3
+                    if BFBCheck=0 and BFB(CurrSubterm2)=-1 then
+                      BFB(CurrSubterm2)=k
+                      BFBCount=BFBCount+1
+                      print CurrSubterm2$
+                    endif
+                  next CurrSubterm2
+                  if BFB(CurrSubterm+1)=k then break endif
+                  if BFBCount=0 then print "None" endif
+                next k
+                if BFB(CurrSubterm+1)<0 then Nonstandard=1 endif
               endif
             endif
           endif
           if Nonstandard=1 then break endif
         next CurrSubterm
-        if Nonstandard=1 then print "Expression Nonstandard" endif 
+        print
+        if Nonstandard=1 then print "Expression Nonstandard" else print "Expression Standard" endif 
       endif
     endif
   endif
