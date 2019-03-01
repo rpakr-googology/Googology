@@ -19,7 +19,7 @@ for CurrTerm=2 to Length
   if PriSeq(CurrTerm)-PriSeq(CurrTerm-1)>2 then Err=1 endif
   if PriSeq(CurrTerm)-PriSeq(CurrTerm-1)=2 then LargestDifference=2 endif
 next CurrTerm
-if LargestDifference=2 and Sys=0 then Sys=2 endif 
+if (LargestDifference=2 or PriSeq(1)=2) and Sys=0 then Sys=2 endif 
 if Err=1 then print "Sequence Invalid" endif
 if Err=0 then
   REM Output sequence
