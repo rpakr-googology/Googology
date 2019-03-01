@@ -465,6 +465,28 @@ if Err=0 then
               dim SubSeq(LongestSubSeqLength,SubSeqCount)
               SubSeq(CurrSubSeqLength,SubSeqCount)=PriSeq(CurrTerm)
             next CurrTerm
+            REM Compare subsequences
+            for CurrSubSeq=1 to SubSeqCount
+              for CurrSubSeq2=CurrSubSeq+1 to SubSeqCount
+                REM If SubSeq CurrSubSeq2 is larger than SubSeq CurrSubSeq then sequence is invalid
+                Difference=0
+                for CurrTerm=1 to min(SubSeqLength(CurrSubSeq),SubSeqLength(CurrSubSeq2))
+                  if not SubSeq(CurrTerm,CurrSubSeq)=SubSeq(CurrTerm,CurrSubSeq2) then
+                    Difference=1
+                    break
+                  endif
+                next CurrTerm
+                if Difference=0 and SubSeqLength(CurrSubSeq)<SubSeqLength(CurrSubSeq2) then
+                  Nonstandard=1
+                  break
+                endif
+                if Difference=1 and SubSeq(CurrTerm,CurrSubSeq)<SubSeq(CurrTerm,CurrSubSeq2) then
+                  Nonstandard=1
+                  break
+                endif
+              next CurrSubSeq2
+              if Nonstandard=1 then break endif
+            next CurrSubSeq
             REM Check standardness of lastsubsequence
             Output$=""
             for CurrTerm=1 to SubSeqLength(SubSeqCount)
