@@ -27,7 +27,7 @@ if Err=0 then
     Output$=Output$+str$(PriSeq(CurrTerm))
     Output$=Output$+","
   next CurrTerm
-  print "Sequence: "+left$(Output$,len(Output$)-1)
+  print "Sequence: ("+left$(Output$,len(Output$)-1)+")"
   print "System: "+str$(Sys)
   REM Divide into subsequences
   SubSeqCount=0
@@ -424,12 +424,12 @@ if Err=0 then
           Output$=Output$+str$(PriSeq(CurrTerm))
           Output$=Output$+","
         next CurrTerm
-        print left$(Output$,len(Output$)-1)
+        print "("+left$(Output$,len(Output$)-1)+")"
       else
         print "Limit Case"
         PriSeq(Length)=PriSeq(Length)-1
-        dim PriSeq(Length*4)
-        EndLength=Length+SubSeqLength(SubSeqCount)*2
+        EndLength=max(Length+SubSeqLength(SubSeqCount)*2,10)
+        dim PriSeq(EndLength)
         for CurrLength=Length+1 to EndLength
           for LastTerm=PriSeq(CurrLength-1)+2 to 1 step -1
             PriSeq(CurrLength)=LastTerm
@@ -820,7 +820,7 @@ if Err=0 then
           Output$=Output$+str$(PriSeq(CurrTerm))
           Output$=Output$+","
         next CurrTerm
-        print Output$+"..."
+        print "("+Output$+"...)"
       endif
     endif
   endif
