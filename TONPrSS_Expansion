@@ -27,7 +27,7 @@ if Err=0 then
     Output$=Output$+str$(PriSeq(CurrTerm))
     Output$=Output$+","
   next CurrTerm
-  print "Sequence: "+left$(Output$,len(Output$)-1)
+  print "Sequence: ("+left$(Output$,len(Output$)-1)+")"
   print "System: "+str$(Sys)
   REM Divide into subsequences
   SubSeqCount=0
@@ -80,7 +80,7 @@ if Err=0 then
       for CurrTerm=1 to SubSeqLength(CurrSubSeq)
         Output$=Output$+str$(SubSeq(CurrTerm,CurrSubSeq))+","
       next CurrTerm
-      print "Checking if subsequence "+left$(Output$,len(Output$)-1)+" is standard or not."
+      print "Checking if subsequence ("+left$(Output$,len(Output$)-1)+") is standard or not."
       CurrSubSeqLength=SubSeqLength(CurrSubSeq)
       dim CurrSubSeq(CurrSubSeqLength)
       for CurrTerm=1 to CurrSubSeqLength
@@ -260,7 +260,6 @@ if Err=0 then
         SubtermCount(CurrSubterm)=(2*len(Subterm$(CurrSubterm))+3)/5
       next CurrSubterm
       print "TON Expression: "+TONExp$
-      print
       REM Check Standardness
       Nonstandard=0
       REM Rule 2
@@ -416,11 +415,14 @@ if Err=0 then
           if Nonstandard=1 then break endif
         next CurrSubterm
       endif
+      if Nonstandard=0 then print "Subsequence standard." else print "Subsequence nonstandard." endif
+      print
       if Nonstandard=1 then break endif
     next CurrSubSeq
     if Nonstandard=1 then print "Sequence nonstandard." endif  
     if Nonstandard=0 then
       print "Sequence standard."
+      print
       if PriSeq(Length)=1 then
         print "Successor Case"
         print "Expansion:"
@@ -429,13 +431,13 @@ if Err=0 then
           Output$=Output$+str$(PriSeq(CurrTerm))
           Output$=Output$+","
         next CurrTerm
-        print left$(Output$,len(Output$)-1)
+        print "("+left$(Output$,len(Output$)-1)+")"
       else
         print "Limit Case"
         print
         PriSeq(Length)=PriSeq(Length)-1
-        dim PriSeq(Length*4)
-        EndLength=Length+SubSeqLength(SubSeqCount)*2
+        EndLength=max(Length+SubSeqLength(SubSeqCount)*2,10)
+        dim PriSeq(EndLength)
         for CurrLength=Length+1 to EndLength
           for LastTerm=PriSeq(CurrLength-1)+2 to 1 step -1
             PriSeq(CurrLength)=LastTerm
@@ -444,7 +446,7 @@ if Err=0 then
               Output$=Output$+str$(PriSeq(CurrTerm))
               Output$=Output$+","
             next CurrTerm
-            print "Checking if sequence "+left$(Output$,len(Output$)-1)+" is standard or not."
+            print "Checking if sequence ("+left$(Output$,len(Output$)-1)+") is standard or not."
             Nonstandard=0
             REM Divide into subsequences
             SubSeqCount=0
@@ -834,7 +836,7 @@ if Err=0 then
           Output$=Output$+str$(PriSeq(CurrTerm))
           Output$=Output$+","
         next CurrTerm
-        print Output$+"..."
+        print "("+Output$+"...)"
       endif
     endif
   endif
