@@ -418,7 +418,6 @@ if Err=0 then
     if Nonstandard=0 then
       if PriSeq(Length)=1 then
         print "Successor Case"
-        print "Expansion:"
         Output$=""
         for CurrTerm=1 to Length-1
           Output$=Output$+str$(PriSeq(CurrTerm))
@@ -814,7 +813,6 @@ if Err=0 then
           next LastTerm
         next CurrLength
         CurrLength=CurrLength-1
-        print "Expansion:"
         Output$=""
         for CurrTerm=1 to CurrLength
           Output$=Output$+str$(PriSeq(CurrTerm))
