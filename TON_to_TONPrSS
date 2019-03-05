@@ -205,7 +205,7 @@ else
       for Term=1 to Length
         Output$=Output$+str$(PriSeq(Term))+","
       next Term
-      print("Sequence: "+left$(Output$,len(Output$)-1))
+      print("Sequence: ("+left$(Output$,len(Output$)-1)+")")
     endif
   endif
 endif
