@@ -25,7 +25,7 @@ if Err=0 then
     Output$=Output$+str$(PriSeq(Term))
     Output$=Output$+","
   next Term
-  print("Sequence: "+left$(Output$,len(Output$)-1))
+  print("Sequence: ("+left$(Output$,len(Output$)-1)+")")
   REM Convert to PSS
   for Term=2 to Length
     for Term2=Term to 1 step -1
