@@ -490,7 +490,7 @@ if Err=0 then
         next CurrSubterm
         if Nonstandard=1 then print "Expression nonstandard." else print "Expression standard." endif
         if Nonstandard=1 then print "Subsequence nonstandard." else print "Subsequence standard." endif
-        endif
+      endif
       print
       print
       if Nonstandard=1 then break endif
