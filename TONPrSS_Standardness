@@ -27,7 +27,7 @@ if Err=0 then
     Output$=Output$+str$(PriSeq(CurrTerm))
     Output$=Output$+","
   next CurrTerm
-  print "Sequence: "+left$(Output$,len(Output$)-1)
+  print "Sequence: ("+left$(Output$,len(Output$)-1)+")"
   print "System: "+str$(Sys)
   print
   REM Divide into subsequences
@@ -56,7 +56,7 @@ if Err=0 then
     for CurrTerm=1 to SubSeqLength(CurrSubSeq)
       Output$=Output$+str$(SubSeq(CurrTerm,CurrSubSeq))+","
     next CurrTerm
-    print left$(Output$,len(Output$)-1)
+    print "("+left$(Output$,len(Output$)-1)+")"
   next CurrSubSeq
   REM Compare subequences
   for CurrSubSeq=1 to SubSeqCount
@@ -90,9 +90,9 @@ if Err=0 then
       for CurrTerm=1 to SubSeqLength(CurrSubSeq)
         Output$=Output$+str$(SubSeq(CurrTerm,CurrSubSeq))+","
       next CurrTerm
-      print "Checking if sequence "+left$(Output$,len(Output$)-1)+" is standard or not."
+      print "Checking if subsequence ("+left$(Output$,len(Output$)-1)+") is standard or not."
       print
-      print "Sequence: "+left$(Output$,len(Output$)-1)
+      print "Sequence: ("+left$(Output$,len(Output$)-1)+")"
       CurrSubSeqLength=SubSeqLength(CurrSubSeq)
       dim CurrSubSeq(CurrSubSeqLength)
       for CurrTerm=1 to CurrSubSeqLength
@@ -488,8 +488,9 @@ if Err=0 then
           endif
           if Nonstandard=1 then break endif
         next CurrSubterm
-        if Nonstandard=1 then print "Expression nonstandard." else print "Expression standard." endif 
-      endif
+        if Nonstandard=1 then print "Expression nonstandard." else print "Expression standard." endif
+        if Nonstandard=1 then print "Subsequence nonstandard." else print "Subsequence standard." endif
+        endif
       print
       print
       if Nonstandard=1 then break endif
