@@ -875,7 +875,6 @@ if Err=0 then
               next
               Output$=Output$+"...)"
               print Output$
-              print  
             endif
           next BR
         next CR
