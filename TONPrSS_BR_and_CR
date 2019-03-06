@@ -212,7 +212,7 @@ if Err=0 then
             Substring$(CommaCount+1)=mid$(SC$,CommaPos(CommaCount)+1,SemicolonPos-CommaPos(CommaCount)-1)
             SubstringCount=CommaCount+1
             Second$=mid$(SC$,RParenPos-1,1)
-            REM Reset Replacement String
+            REM Reset replacement string
             Replacement$=""
             REM Compute replacement
             for SubstringIndex=1 to SubstringCount
@@ -262,7 +262,7 @@ if Err=0 then
       for CurrSubterm=1 to SubtermCount
         SubtermCount(CurrSubterm)=(2*len(Subterm$(CurrSubterm))+3)/5
       next CurrSubterm
-      REM Check Standardness
+      REM Check standardness
       Nonstandard=0
       REM Rule 2
       for CurrSubterm=1 to SubtermCount
@@ -285,7 +285,7 @@ if Err=0 then
             next CurrChar2
             a$=mid$(CurrSubterm$,3,CurrChar-3)
             c$=mid$(CurrSubterm$,CurrChar+3,CurrChar2-CurrChar-3)
-            REM Find Postfix Forms of a and c
+            REM Find postfix forms of a and c
             aPostfix$=""
             cPostfix$=""
             for CurrChar=len(a$) to 1 step -1
@@ -329,16 +329,16 @@ if Err=0 then
               BFB(CurrSubterm2)=-1
             next CurrSubterm2
             REM Check 0-BFB-ness
-            REM Find postfix Form of currSubterm$
+            REM Find postfix form of CurrSubterm$
             CurrSubtermPostfix$=""
             for CurrChar=len(CurrSubterm$) to 1 step -1
               CurrChar$=mid$(CurrSubterm$,CurrChar,1)
               if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubtermPostfix$=CurrSubtermPostfix$+CurrChar$ endif
             next CurrChar
-            REM Loop: all Subterms of CurrSubterm$
+            REM Loop: all subterms of CurrSubterm$
             for CurrSubterm2=CurrSubterm to CurrSubterm+SubtermCount(CurrSubterm+1)
               CurrSubterm2$=Subterm$(CurrSubterm2)
-              REM Find postfix Form of CurrSubterm2$
+              REM Find postfix form of CurrSubterm2$
               CurrSubterm2Postfix$=""
               for CurrChar=len(CurrSubterm2$) to 1 step -1
                 CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
@@ -612,7 +612,7 @@ if Err=0 then
                   Substring$(CommaCount+1)=mid$(SC$,CommaPos(CommaCount)+1,SemicolonPos-CommaPos(CommaCount)-1)
                   SubstringCount=CommaCount+1
                   Second$=mid$(SC$,RParenPos-1,1)
-                  REM Reset Replacement String
+                  REM Reset replacement string
                   Replacement$=""
                   REM Compute replacement
                   for SubstringIndex=1 to SubstringCount
@@ -662,7 +662,7 @@ if Err=0 then
             for CurrSubterm=1 to SubtermCount
               SubtermCount(CurrSubterm)=(2*len(Subterm$(CurrSubterm))+3)/5
             next CurrSubterm
-            REM Check Standardness
+            REM Check standardness
             REM Rule 2
             for CurrSubterm=1 to SubtermCount
               CurrSubterm$=Subterm$(CurrSubterm)
@@ -684,7 +684,7 @@ if Err=0 then
                   next CurrChar2
                   a$=mid$(CurrSubterm$,3,CurrChar-3)
                   c$=mid$(CurrSubterm$,CurrChar+3,CurrChar2-CurrChar-3)
-                  REM Find Postfix Forms of a and c
+                  REM Find postfix forms of a and c
                   aPostfix$=""
                   cPostfix$=""
                   for CurrChar=len(a$) to 1 step -1
@@ -726,16 +726,16 @@ if Err=0 then
                     BFB(CurrSubterm2)=-1
                   next CurrSubterm2
                   REM Check 0-BFB-ness
-                  REM Find postfix Form of currSubterm$
+                  REM Find postfix form of CurrSubterm$
                   CurrSubtermPostfix$=""
                   for CurrChar=len(CurrSubterm$) to 1 step -1
                     CurrChar$=mid$(CurrSubterm$,CurrChar,1)
                     if CurrChar$="C" or CurrChar$="0" or CurrChar$="W" then CurrSubtermPostfix$=CurrSubtermPostfix$+CurrChar$ endif
                   next CurrChar
-                  REM Loop: all Subterms of CurrSubterm$
+                  REM Loop: all subterms of CurrSubterm$
                   for CurrSubterm2=CurrSubterm to CurrSubterm+SubtermCount(CurrSubterm+1)
                     CurrSubterm2$=Subterm$(CurrSubterm2)
-                    REM Find postfix Form of CurrSubterm2$
+                    REM Find postfix form of CurrSubterm2$
                     CurrSubterm2Postfix$=""
                     for CurrChar=len(CurrSubterm2$) to 1 step -1
                       CurrChar$=mid$(CurrSubterm2$,CurrChar,1)
@@ -828,53 +828,66 @@ if Err=0 then
         dim Expansion2(CurrLength)
         for CR=2 to Length
           for BR=1 to CR-1
-            REM Compute expansion
-            BadLength=CR-BR
-            if CR=Length then Delta=PriSeq(CR)-PriSeq(BR)-1 else Delta=PriSeq(CR)-PriSeq(BR) endif
-            for CurrTerm=1 to CR-1
-              Expansion2(CurrTerm)=PriSeq(CurrTerm)
-            next CurrTerm
-            for CurrTerm=CR to CurrLength
-              Expansion2(CurrTerm)=Expansion2(CurrTerm-BadLength)+Delta
-            next CurrTerm
-            REM Compare expansions
-            Difference=0
-            for CurrTerm=1 to CurrLength
-              if not Expansion(CurrTerm)=Expansion2(CurrTerm) then Difference=1 endif
-            next CurrTerm
-            if Difference=0 then
-              REM Output
-              print
-              GoodPart$=""
-              for CurrTerm=1 to BR-1
-                GoodPart$=GoodPart$+str$(PriSeq(CurrTerm))+","
+            REM Check validity of cut part
+            Invalid=0
+            if not CR=Length then
+              for CurrTerm=CR+1 to Length
+                if PriSeq(CurrTerm)<=PriSeq(CR) then
+                  Invalid=1
+                  break
+                endif
               next CurrTerm
-              GoodPart$=left$(GoodPart$,len(GoodPart$)-1)
-              if BR=1 then GoodPart$="" endif
-              BadPart$=""
-              for CurrTerm=BR to CR-1
-                BadPart$=BadPart$+str$(PriSeq(CurrTerm))+","
+            endif
+            if Invalid=0 then
+              REM Compute expansion
+              Invalid=0
+              BadLength=CR-BR
+              if CR=Length then Delta=PriSeq(CR)-PriSeq(BR)-1 else Delta=PriSeq(CR)-PriSeq(BR) endif
+              for CurrTerm=1 to CR-1
+                Expansion2(CurrTerm)=PriSeq(CurrTerm)
               next CurrTerm
-              BadPart$=left$(BadPart$,len(BadPart$)-1)
-              CutPart$=""
-              for CurrTerm=CR to Length
-                CutPart$=CutPart$+str$(PriSeq(CurrTerm))+","
+              for CurrTerm=CR to CurrLength
+                Expansion2(CurrTerm)=Expansion2(CurrTerm-BadLength)+Delta
               next CurrTerm
-              CutPart$=left$(CutPart$,len(CutPart$)-1)
-              print "Good part: "+GoodPart$
-              print "Bad part: "+BadPart$
-              print "Cut part: "+CutPart$
-              Output$="("+GoodPart$+"/"+BadPart$+"/"
-              for Multiplier=1 to 4
-                Copy$="" 
+              REM Compare expansions
+              Difference=0
+              for CurrTerm=1 to CurrLength
+                if not Expansion(CurrTerm)=Expansion2(CurrTerm) then Difference=1 endif
+              next CurrTerm
+              if Difference=0 then
+                REM Output
+                print
+                GoodPart$=""
+                for CurrTerm=1 to BR-1
+                  GoodPart$=GoodPart$+str$(PriSeq(CurrTerm))+","
+                next CurrTerm
+                GoodPart$=left$(GoodPart$,len(GoodPart$)-1)
+                if BR=1 then GoodPart$="" endif
+                BadPart$=""
                 for CurrTerm=BR to CR-1
-                  Copy$=Copy$+str$(PriSeq(CurrTerm)+Multiplier*Delta)+","
+                  BadPart$=BadPart$+str$(PriSeq(CurrTerm))+","
+                next CurrTerm
+                BadPart$=left$(BadPart$,len(BadPart$)-1)
+                CutPart$=""
+                for CurrTerm=CR to Length
+                  CutPart$=CutPart$+str$(PriSeq(CurrTerm))+","
+                next CurrTerm
+                CutPart$=left$(CutPart$,len(CutPart$)-1)
+                print "Good part: "+GoodPart$
+                print "Bad part: "+BadPart$
+                print "Cut part: "+CutPart$
+                Output$="("+GoodPart$+"/"+BadPart$+"/"
+                for Multiplier=1 to 4
+                  Copy$="" 
+                  for CurrTerm=BR to CR-1
+                    Copy$=Copy$+str$(PriSeq(CurrTerm)+Multiplier*Delta)+","
+                  next
+                  Copy$=left$(Copy$,len(Copy$)-1)
+                  Output$=Output$+Copy$+"/"
                 next
-                Copy$=left$(Copy$,len(Copy$)-1)
-                Output$=Output$+Copy$+"/"
-              next
-              Output$=Output$+"...)"
-              print Output$
+                Output$=Output$+"...)"
+                print Output$
+              endif
             endif
           next BR
         next CR
