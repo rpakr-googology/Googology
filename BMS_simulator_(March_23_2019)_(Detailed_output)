@@ -1,0 +1,220 @@
+REM Bashicu matrix simulator (detailed output)
+REM Definition by rpakr
+REM Definition:
+REM Searching bad root and computing delta is the same as BM2.3
+REM Define t to be the number of nonzero entries in the rightmost column.
+REM If row t of a column is a descendant of the bad root, the C=(1^t)
+REM Otherwise, if only the first k rows have parents that are to the right of BR and all have C=1, C=(1^k,0^(t-k)).
+REM No C matrix modification rules.
+REM https://discordapp.com/channels/206932820206157824/437684636320137226/559011694777729037
+REM https://twitter.com/rpakr_googology/status/1109453790820761600
+REM
+REM Input
+input ""Matrix$
+if len(Matrix$)>200 then exit endif
+CurrColumn=1
+CurrRow=1
+dim Matrix(CurrColumn,CurrRow)
+for CurrChar=1 to len(Matrix$)
+  CurrChar$=mid$(Matrix$,CurrChar,1)
+  if CurrChar$="," then
+    CurrRow=CurrRow+1
+    dim Matrix(CurrColumn,CurrRow)
+  endif
+  if CurrChar$=")" then
+    CurrColumn=CurrColumn+1
+    CurrRow=1
+    dim Matrix(CurrColumn,CurrRow)
+  endif
+  if CurrChar$="[" then break endif
+  if "0"<=CurrChar$ and CurrChar$<="9" then Matrix(CurrColumn,CurrRow)=Matrix(CurrColumn,CurrRow)*10+val(CurrChar$) endif
+next CurrChar
+Bracket=0
+for CurrChar=CurrChar to len(Matrix$)
+  CurrChar$=mid$(Matrix$,CurrChar,1)
+  if "0"<=CurrChar$ and CurrChar$<="9" then Bracket=Bracket*10+val(CurrChar$) endif
+next
+if Bracket>10 then exit endif
+if instr(Matrix$,"[")=0 then Bracket=2 endif
+ColumnCount=arraysize(Matrix(),1)-1
+RowCount=arraysize(Matrix(),2)
+REM Check validity of matrix
+for CurrRow=1 to RowCount
+  if not Matrix(1,CurrRow)=0 then exit endif
+next CurrRow
+for CurrColumn=1 to ColumnCount
+  for CurrRow=2 to RowCount
+    if Matrix(CurrColumn,CurrRow)>Matrix(CurrColumn,CurrRow-1) then exit endif
+  next CurrRow
+next CurrColumn
+REM Output
+Output$=""
+for CurrColumn=1 to ColumnCount
+  Output$=Output$+"("
+  for CurrRow=1 to RowCount
+    Output$=Output$+str$(Matrix(CurrColumn,CurrRow))+","
+  next CurrRow
+  right$(Output$,1)=")"
+next CurrColumn
+Output$=Output$+"["+str$(Bracket)+"]"
+print Output$
+REM Expansion
+if Matrix(ColumnCount,1)=0 then
+  REM Successor case
+  print "Successor case"
+  ColumnCount=ColumnCount-1
+  Bracket=Bracket+1
+  Output$=""
+  for CurrColumn=1 to ColumnCount
+    Output$=Output$+"("
+    for CurrRow=1 to RowCount
+      Output$=Output$+str$(Matrix(CurrColumn,CurrRow))+","
+    next CurrRow
+    right$(Output$,1)=")"
+  next CurrColumn
+  Output$=Output$+"["+str$(Bracket)+"]"
+  print Output$
+  exit
+endif
+REM Limit case
+print "Limit case"
+REM Compute t
+for t=1 to RowCount
+  if Matrix(ColumnCount,t)=0 then break endif
+next t
+t=t-1
+print "t="+str$(t)
+REM Find parents
+dim ParentColumn(ColumnCount,RowCount)
+REM Row 1
+for CurrColumn=2 to ColumnCount
+  if Matrix(CurrColumn,1)>0 then
+    for CurrColumn2=CurrColumn to 1 step -1
+      if Matrix(CurrColumn2,1)<Matrix(CurrColumn,1) then 
+        ParentColumn(CurrColumn,1)=CurrColumn2
+        break
+      endif
+    next CurrColumn2
+  endif
+next CurrColumn
+REM Row 2 to row t
+if t>1 then
+  for CurrRow=2 to t
+    for CurrColumn=2 to ColumnCount
+      if Matrix(CurrColumn,CurrRow)>0 then
+        CurrColumn2=CurrColumn
+        for Rept=1 to CurrColumn
+          CurrColumn2=ParentColumn(CurrColumn2,CurrRow-1)
+          if Matrix(CurrColumn2,CurrRow)<Matrix(CurrColumn,CurrRow) then 
+            ParentColumn(CurrColumn,CurrRow)=CurrColumn2
+            break
+          endif
+        next Rept
+      endif
+    next CurrColumn
+  next CurrRow
+endif
+REM Print parent positions
+Output$=""
+for CurrColumn=1 to ColumnCount
+  Output$=Output$+"("
+  for CurrRow=1 to t
+    Output$=Output$+str$(ParentColumn(CurrColumn,CurrRow))+","
+  next CurrRow
+  right$(Output$,1)=")"
+next CurrColumn
+print "Hydra:"+Output$
+REM Find bad root
+BR=ParentColumn(ColumnCount,t)
+BadLength=ColumnCount-BR
+dim Matrix(ColumnCount+BadLength*Bracket,RowCount)
+REM Compute delta
+dim Delta(t)
+for CurrRow=1 to t-1
+  Delta(CurrRow)=Matrix(ColumnCount,CurrRow)-Matrix(BR,CurrRow)
+next
+REM Print good part
+if BR=1 then
+  print "G=empty"
+else
+  Output$=""
+  for CurrColumn=1 to BR-1
+    Output$=Output$+"("
+    for CurrRow=1 to RowCount
+      Output$=Output$+str$(Matrix(CurrColumn,CurrRow))+","
+    next CurrRow
+    right$(Output$,1)=")"
+  next CurrColumn
+  print "G="+Output$
+endif
+REM Print bad part
+Output$=""
+for CurrColumn=BR to ColumnCount-1
+  Output$=Output$+"("
+  for CurrRow=1 to RowCount
+    Output$=Output$+str$(Matrix(CurrColumn,CurrRow))+","
+  next CurrRow
+  right$(Output$,1)=")"
+next CurrColumn
+print "B="+Output$
+REM Print delta
+Output$="("
+for CurrRow=1 to t
+  Output$=Output$+str$(Delta(CurrRow))+","
+next CurrRow
+right$(Output$,1)=")"
+print "Delta="+Output$
+REM Compute C matrix
+dim Cases(ColumnCount-1)
+Cases(BR)=1
+for CurrColumn=BR+1 to ColumnCount-1
+  if Cases(ParentColumn(CurrColumn,t))=1 then Cases(CurrColumn)=1 endif
+next CurrColumn
+dim C(ColumnCount-1,t)
+for CurrColumn=BR to ColumnCount-1
+  if Cases(CurrColumn)=1 then
+    for CurrRow=1 to t
+      C(CurrColumn,CurrRow)=1
+    next CurrRow
+  else
+    for CurrRow=1 to t
+      if ParentColumn(CurrColumn,CurrRow)>BR then
+        if C(ParentColumn(CurrColumn,CurrRow),CurrRow)=1 then
+          C(CurrColumn,CurrRow)=1
+        endif
+      endif
+    next CurrRow
+  endif
+next CurrColumn
+REM Output C matrix
+Output$=""
+for CurrColumn=BR to ColumnCount-1
+  Output$=Output$+"("
+  for CurrRow=1 to t
+    Output$=Output$+str$(C(CurrColumn,CurrRow))+","
+  next CurrRow
+  right$(Output$,1)=")"
+next CurrColumn
+print "C="+Output$
+REM Expansion
+for Multiplier=1 to Bracket
+  for CurrColumn=BR to ColumnCount-1
+    for CurrRow=1 to t
+      Matrix(CurrColumn+BadLength*Multiplier,CurrRow)=Matrix(CurrColumn,CurrRow)+Delta(CurrRow)*C(CurrColumn,CurrRow)*Multiplier
+    next CurrRow
+    for CurrRow=t+1 to RowCount
+      Matrix(CurrColumn+BadLength*Multiplier,CurrRow)=Matrix(CurrColumn,CurrRow)
+    next CurrRow
+  next CurrColumn
+next Multiplier
+REM Output
+Output$=""
+for CurrColumn=1 to ColumnCount+BadLength*Bracket-1
+  Output$=Output$+"("
+  for CurrRow=1 to RowCount
+    Output$=Output$+str$(Matrix(CurrColumn,CurrRow))+","
+  next CurrRow
+  right$(Output$,1)=")"
+next CurrColumn
+Output$=Output$+"["+str$(Bracket)+"]"
+print Output$
