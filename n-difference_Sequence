@@ -8,11 +8,11 @@ for CurrChar=1 to len(Seq$)
   CurrChar$=mid$(Seq$,CurrChar,1)
   if CurrChar$="," then CurrTerm=CurrTerm+1 endif
   if CurrChar$>="0" and CurrChar$<="9" then PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(CurrChar$) endif
-  if CurrChar$=")" then break endif
+  if CurrChar$="_" then break endif
 next CurrChar
 Length=CurrTerm
 if PriSeq(1)>0 then exit endif
-n=val(mid$(Seq$,CurrChar+2,len(Seq$)-CurrChar))
+n=val(mid$(Seq$,CurrChar+1,len(Seq$)-CurrChar))
 REM Output
 for Term=1 to Length
   Output$=Output$+str$(PriSeq(Term))
