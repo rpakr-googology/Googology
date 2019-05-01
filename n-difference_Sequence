@@ -51,7 +51,7 @@ for BR=Length to 2 step -1
 next BR
 BadLength=Length-BR
 REM Calculate delta
-Delta=PriSeq(Length)-PriSeq(BR)
+Delta=PriSeq(Length)-PriSeq(BR)-1
 print "Delta="+str$(Delta)
 REM Remove last term
 PriSeq(Length)=0
