@@ -68,11 +68,11 @@ Output$=""
 for CurrTerm=1 to BR-1
   Output$=Output$+str$(PriSeq(CurrTerm))+","
 next CurrTerm
-if Output$="" then Output$="/" else right$(Output$,1)="/" endif
+if Output$="" then Output$="|" else right$(Output$,1)="|" endif
 for Repetition=0 to 4
   for CurrTerm=BR+Repetition*BadLength to BR+(Repetition+1)*BadLength-1
     Output$=Output$+str$(PriSeq(CurrTerm))+","
   next CurrTerm
-  right$(Output$,1)="/"
+  right$(Output$,1)="|"
 next Repetition
 print "("+Output$+"...)_"+n$
