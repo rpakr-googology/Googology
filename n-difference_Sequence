@@ -20,7 +20,7 @@ for Term=1 to Length
 next Term
 if n<0 then n$="{"+str$(n)+"}" else n$=str$(n) endif
 print "Sequence: ("+left$(Output$,len(Output$)-1)+")_"+n$
-if PriSeq(Length)=1 then
+if PriSeq(Length)=0 then
   REM Successor case
   print("Successor case")
   Output$=""
