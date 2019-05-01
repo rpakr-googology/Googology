@@ -1,4 +1,4 @@
-REM Input:n-difference sequence
+REM Input:n-difference sequence system
 REM Output:Expansion
 REM n-difference sequence is a notation by googologist 108Hassium
 input ""Seq$
