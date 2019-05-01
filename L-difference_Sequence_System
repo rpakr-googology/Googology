@@ -1,0 +1,83 @@
+REM Input:L-difference sequence system
+REM Output:Expansion
+REM L-difference sequence system is a notation by googologist 108Hassium
+input ""Seq$
+CurrTerm=1
+for CurrChar=1 to len(Seq$)
+  dim PriSeq(CurrTerm)
+  CurrChar$=mid$(Seq$,CurrChar,1)
+  if CurrChar$="," then CurrTerm=CurrTerm+1 endif
+  if CurrChar$>="0" and CurrChar$<="9" then PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(CurrChar$) endif
+next CurrChar
+Length=CurrTerm
+if PriSeq(1)>0 then exit endif
+REM Output
+for Term=1 to Length
+  Output$=Output$+str$(PriSeq(Term))
+  Output$=Output$+","
+next Term
+print "Sequence: ("+left$(Output$,len(Output$)-1)+")"
+if PriSeq(Length)=0 then
+  REM Successor case
+  print("Successor case")
+  Output$=""
+  for Term=1 to Length-1
+    Output$=Output$+str$(PriSeq(Term))
+    Output$=Output$+","
+  next Term
+  print "Expansion: ("+left$(Output$,len(Output$)-1)+")"
+  exit
+endif
+REM Limit case
+print("Limit case")
+REM Calcluate n
+n=0
+CurrLenght=1
+for CurrTerm=2 to Length
+  if PriSeq(CurrTerm)>PriSeq(CurrTerm-1) then CurrLength=CurrLength+1 else CurrLength=1 endif
+  if CurrLength>n then n=CurrLength endif
+next CurrTerm
+print "n="+str$(n)
+REM Calculate D sequence
+dim d(Length)
+for CurrTerm=2 to Length
+  d(CurrTerm)=PriSeq(CurrTerm)-PriSeq(CurrTerm-1)
+next CurrTerm
+if PriSeq(Length)-PriSeq(Length-1)<-n then d(Length)=0-n endif
+REM Output D
+Output$=""
+for CurrTerm=1 to Length
+  Output$=Output$+str$(d(CurrTerm))+","
+next CurrTerm
+print "d: ("+left$(Output$,len(Output$)-1)+")"
+REM Search bad root
+for BR=Length to 2 step -1
+  if PriSeq(BR)<PriSeq(Length) and d(BR)<d(Length) then break endif
+next BR
+BadLength=Length-BR
+REM Calculate delta
+Delta=PriSeq(Length)-PriSeq(BR)-1
+print "Delta="+str$(Delta)
+REM Remove last term
+PriSeq(Length)=0
+Length=Length-1
+REM Expansion
+for Repetition=0 to 4
+  dim PriSeq(Length+BadLength)
+  for CurrTerm=1 to BadLength
+    PriSeq(Length+CurrTerm)=PriSeq(BR+CurrTerm-1)+(Repetition+1)*Delta
+  next CurrTerm
+  Length=Length+BadLength
+next Repetition
+Output$=""
+for CurrTerm=1 to BR-1
+  Output$=Output$+str$(PriSeq(CurrTerm))+","
+next CurrTerm
+if Output$="" then Output$="|" else right$(Output$,1)="|" endif
+for Repetition=0 to 4
+  for CurrTerm=BR+Repetition*BadLength to BR+(Repetition+1)*BadLength-1
+    Output$=Output$+str$(PriSeq(CurrTerm))+","
+  next CurrTerm
+  right$(Output$,1)="|"
+next Repetition
+print "("+Output$+"...)"
