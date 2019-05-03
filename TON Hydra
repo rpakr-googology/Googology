@@ -179,3 +179,55 @@ for CurrTerm=1 to Length
   Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+")"
 next CurrTerm
 print("Hydra: "+Output$)
+REM Comparisons
+dim PairSeqC(Length), PairSeq2A(Length), PairSeq2B$(Length), PairSeq3A(Length), PairSeq3B$(Length)
+for CurrTerm=1 to Length
+  for CurrTerm2=1 to Length
+    PairSeq2A(CurrTerm2)=0
+    PairSeq2B$(CurrTerm2)=""
+  next CurrTerm2
+  for CurrTerm2=CurrTerm to Length
+    PairSeq2A(CurrTerm2-CurrTerm+1)=PairSeqA(CurrTerm2)-PairSeqA(CurrTerm)
+    PairSeq2B$(CurrTerm2-CurrTerm+1)=PairSeqB$(CurrTerm2)
+  next CurrTerm2
+  Largest=1
+  CurrHeight=PairSeqA(CurrTerm)
+  for CurrTerm2=CurrTerm-1 to 1 step -1
+    if CurrHeight>PairSeqA(CurrTerm2) then
+      CurrHeight=PairSeqA(CurrTerm2)
+      for CurrTerm3=1 to Length
+        PairSeq3A(CurrTerm3)=0
+        PairSeq3B$(CurrTerm3)=""
+      next CurrTerm3
+      for CurrTerm3=CurrTerm2 to Length
+        PairSeq3A(CurrTerm3-CurrTerm2+1)=PairSeqA(CurrTerm3)-PairSeqA(CurrTerm2)
+        PairSeq3B$(CurrTerm3-CurrTerm2+1)=PairSeqB$(CurrTerm3)
+      next CurrTerm3
+      REM Start comparison
+      for CurrTerm3=1 to Length
+        if (not PairSeq2A(CurrTerm3)=PairSeq3A(CurrTerm3)) or (not PairSeq2B$(CurrTerm3)=PairSeq3B$(CurrTerm3)) then break endif
+      next CurrTerm3
+      if not PairSeq2A(CurrTerm3)=PairSeq3A(CurrTerm3) then
+        if PairSeq2A(CurrTerm3)<PairSeq3A(CurrTerm3) then 
+          Largest=0
+          break
+        endif
+      else
+        if PairSeq2B$(CurrTerm3)="0" or PairSeq3B$(CurrTerm3)=str$(Sys+1) then
+          Largest=0
+          break
+        endif
+      endif
+    endif
+  next CurrTerm2
+  if Largest=1 then PairSeqC(CurrTerm)=1 endif
+next CurrTerm
+Output$=""
+for CurrTerm=1 to Length
+  if PairSeqC(CurrTerm)=1 then
+    Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+",red)"
+  else
+    Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+")"
+  endif
+next CurrTerm
+print("Hydra: "+Output$)
