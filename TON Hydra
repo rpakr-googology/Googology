@@ -132,18 +132,20 @@ for CurrChar=1 to len(TONExp$)
         Subst$=Subst$+Substring$(CurrSubstring)+","
       next CurrSubstring
       right$(Subst$,1)=")"
-      for SpaceCount=1 to 3*SubstringIndex-3
+      for SpaceCount=1 to 3*SubstringIndex-1
         Subst$=Subst$+" "
       next SpaceCount
       REM Replacement
       mid$(TONExp$,CurrChar,len(Subst$))=Subst$
     endif
+    for CurrChar2=1 to len(TONExp$)
+      CurrChar2$=mid$(TONExp$,CurrChar2,1)
+      if CurrChar2$=" " then mid$(TONExp$,CurrChar2,len(TONExp$)-CurrChar2+1)=mid$(TONExp$,CurrChar2+1,len(TONExp$)-CurrChar2)+" " endif
+      if CurrChar2$=" " and instr(TONExp$,")",CurrChar2)>0 then CurrChar2=CurrChar2-1 endif
+    next CurrChar2
   endif
 next CurrChar
-Output$=""
-for CurrChar=1 to len(TONExp$)
-  if not mid$(TONExp$,CurrChar,1)=" " then Output$=Output$+mid$(TONExp$,CurrChar,1) endif
-next CurrChar
+Output$=rtrim$(TONExp$)
 print("Shortened expression: "+Output$)
 TONExp$=Output$
 REM Convert to hydra
@@ -151,19 +153,25 @@ Nestlevel=0
 Length=0
 for CurrChar=1 to len(TONExp$)
   CurrChar$=mid$(TONExp$,CurrChar,1)
+  if CurrChar$="(" then NestLevel=NestLevel+1 endif
+  if CurrChar$=")" then NestLevel=NestLevel-1 endif
   if CurrChar$="C" then
     Length=Length+1
     dim PairSeqA(Length), PairSeqB$(Length)
     PairSeqA(Length)=NestLevel
     PairSeqB$(Length)="C"
   endif
-  if CurrChar$="(" then NestLevel=NestLevel+1 endif
-  if CurrChar$=")" then NestLevel=NestLevel-1 endif
   if CurrChar$="W" then
     Length=Length+1
     dim PairSeqA(Length),PairSeqB$(Length)
     PairSeqA(Length)=NestLevel
     PairSeqB$(Length)=str$(Sys+1)
+  endif
+  if CurrChar$="0" then
+    Length=Length+1
+    dim PairSeqA(Length),PairSeqB$(Length)
+    PairSeqA(Length)=NestLevel
+    PairSeqB$(Length)="0"
   endif
 next CurrChar
 Output$=""
