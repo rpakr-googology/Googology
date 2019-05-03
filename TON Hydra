@@ -1,0 +1,173 @@
+REM Input:TON expression
+REM Output:Hydra
+input ""TONExp$
+input ""Sys
+if instr(TONExp$,"W")>0 and Sys=0 then Sys=2 endif
+print "TON Expression: "+TONExp$
+print "System: "+str$(Sys)
+REM Read input
+for CurrChar=1 to len(TONExp$)
+  CurrChar$=mid$(TONExp$,CurrChar,1)
+  if CurrChar$="C" then
+    CCount=CCount+1
+    dim CPos(CCount)
+    CPos(CCount)=CurrChar
+  endif
+  if CurrChar$="(" then
+    LParenCount=LParenCount+1
+    dim LParenPos(LParenCount)
+    LParenPos(LParenCount)=CurrChar
+  endif
+  if CurrChar$="," then
+    CommaCount=CommaCount+1
+    dim CommaPos(CommaCount)
+    CommaPos(CommaCount)=CurrChar
+  endif
+  if CurrChar$=")" then
+    RParenCount=RParenCount+1
+    dim RParenPos(RParenCount)
+    RParenPos(RParenCount)=CurrChar
+  endif
+  if CurrChar$="0" or CurrChar$="W" then
+    ConstCount=ConstCount+1
+    dim ConstPos(ConstCount)
+    ConstPos(ConstCount)=CurrChar
+  endif
+next CurrChar
+if CCount<>LParenCount then Err=Err+1 endif
+if CCount<>CommaCount then Err=Err+1 endif
+if CCount<>RParenCount then Err=Err+1 endif
+if not CCount-ConstCount+1=0 then Err=Err+1 endif
+if len(TONExp$)>CCount+LParenCount+CommaCount+RParenCount+ConstCount then Err=Err+1 endif
+if Err>0 then
+  print "Expression Invalid"
+  exit
+endif
+for CurrIndex=1 to CCount
+  if not mid$(TONExp$,CPos(CurrIndex)+1,1)="(" then Err=Err+1 endif
+next CurrIndex
+for CurrIndex=1 to LParenCount
+  if not(mid$(TONExp$,LParenPos(CurrIndex)+1,1)="0" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="W" or mid$(TONExp$,LParenPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+next CurrIndex
+for CurrIndex=1 to RParenCount
+  if not(mid$(TONExp$,RParenPos(CurrIndex)+1,1)=")" or mid$(TONExp$,RParenPos(CurrIndex)+1,1)=",") then Err=Err+1 endif
+next CurrIndex
+for CurrIndex=1 to ConstCount
+  if not(mid$(TONExp$,ConstPos(CurrIndex)+1,1)="," or mid$(TONExp$,ConstPos(CurrIndex)+1,1)=")") then Err=Err+1 endif
+next CurrIndex
+for CurrIndex=1 to CommaCount
+  if not(mid$(TONExp$,CommaPos(CurrIndex)+1,1)="0" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="W" or mid$(TONExp$,CommaPos(CurrIndex)+1,1)="C") then Err=Err+1 endif
+next CurrIndex
+if Err>1 then
+  print "Expression Invalid"
+  exit
+endif
+for CurrCIndex=1 to CCount
+  NestLevel=0
+  BaseLayerCommaCount=0
+  for CurrChar=CPos(CurrCIndex) to len(TONExp$)
+    if mid$(TONExp$,CurrChar,1)="(" then NestLevel=NestLevel+1 endif
+    if mid$(TONExp$,CurrChar,1)=")" then 
+      NestLevel=NestLevel-1
+      if NestLevel=0 then
+        if not BaseLayerCommaCount=1 then Err=Err+1 endif
+        break
+      endif
+    endif
+    if mid$(TONExp$,CurrChar,1)="," and NestLevel=1 then BaseLayerCommaCount=BaseLayerCommaCount+1 endif
+  next CurrChar
+next CurrCIndex
+if Err>1 then
+  print "Expression Invalid"
+  exit
+endif
+TONExp2$=""
+for CurrChar=1 to len(TONExp$)
+  CurrChar$=mid$(TONExp$,CurrChar,1)
+  if CurrChar$="W" then TONExp2$=TONExp2$+"C(W_"+str$(Sys+1)+",0)" else TONExp2$=TONExp2$+CurrChar$ endif
+next CurrChar
+TONExp$=TONExp2$
+REM Convert to Semicolons
+for CurrChar=1 to len(TONExp$)
+  CurrChar$=mid$(TONExp$,CurrChar,1)
+  if mid$(TONExp$,CurrChar,1)="C" then
+    REM Find Corresponding Comma
+    CPos=CurrChar
+    NestLevel=0
+    for CurrChar2=CurrChar to len(TONExp$)
+      CurrChar2$=mid$(TONExp$,CurrChar2,1)
+      if CurrChar2$="(" then NestLevel=NestLevel+1 endif
+      if CurrChar2$="," and NestLevel=1 then CommaPos=CurrChar2 endif
+      if CurrChar2$=")" then
+        NestLevel=NestLevel-1
+        if NestLevel=0 then break endif
+      endif
+    next CurrChar2
+    if mid$(TONExp$,CommaPos+1,1)="0" then
+      mid$(TONExp$,CommaPos,2)="  "
+    else
+      REM Extract Substrings
+      SubstringIndex=1
+      dim Substring$(SubstringIndex)
+      Substring$(1)=mid$(TONExp$,CPos+2,CommaPos-CPos-2)
+      for SubstringIndex=2 to len(TONExp$)
+        CPos=CommaPos+1
+        NestLevel=0
+        for CurrChar2=CPos to len(TONExp$)
+          if mid$(TONExp$,CurrChar2,1)="(" then NestLevel=NestLevel+1 endif
+          if mid$(TONExp$,CurrChar2,1)="," and NestLevel=1 then CommaPos=CurrChar2 endif
+          if mid$(TONExp$,CurrChar2,1)=")" then
+            NestLevel=NestLevel-1
+            if NestLevel=0 then break endif
+          endif
+        next CurrChar2
+        dim Substring$(SubstringIndex)
+        Substring$(SubstringIndex)=mid$(TONExp$,CPos+2,CommaPos-CPos-2)
+        if mid$(TONExp$,CommaPos+1,1)="0" then break endif
+      next SubstringIndex
+      REM Compute Replacement String
+      Subst$="C("
+      dim Substring$(SubstringIndex)
+      for CurrSubstring=SubstringIndex to 1 step -1
+        Subst$=Subst$+Substring$(CurrSubstring)+","
+      next CurrSubstring
+      right$(Subst$,1)=")"
+      for SpaceCount=1 to 3*SubstringIndex-3
+        Subst$=Subst$+" "
+      next SpaceCount
+      REM Replacement
+      mid$(TONExp$,CurrChar,len(Subst$))=Subst$
+    endif
+  endif
+next CurrChar
+Output$=""
+for CurrChar=1 to len(TONExp$)
+  if not mid$(TONExp$,CurrChar,1)=" " then Output$=Output$+mid$(TONExp$,CurrChar,1) endif
+next CurrChar
+print("Shortened expression: "+Output$)
+TONExp$=Output$
+REM Convert to hydra
+Nestlevel=0
+Length=0
+for CurrChar=1 to len(TONExp$)
+  CurrChar$=mid$(TONExp$,CurrChar,1)
+  if CurrChar$="C" then
+    Length=Length+1
+    dim PairSeqA(Length), PairSeqB$(Length)
+    PairSeqA(Length)=NestLevel
+    PairSeqB$(Length)="C"
+  endif
+  if CurrChar$="(" then NestLevel=NestLevel+1 endif
+  if CurrChar$=")" then NestLevel=NestLevel-1 endif
+  if CurrChar$="W" then
+    Length=Length+1
+    dim PairSeqA(Length),PairSeqB$(Length)
+    PairSeqA(Length)=NestLevel
+    PairSeqB$(Length)=str$(Sys+1)
+  endif
+next CurrChar
+Output$=""
+for CurrTerm=1 to Length
+  Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+")"
+next CurrTerm
+print("Hydra: "+Output$)
