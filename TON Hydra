@@ -181,7 +181,8 @@ next CurrTerm
 print("Hydra: "+Output$)
 REM Comparisons
 dim PairSeqC(Length), PairSeq2A(Length), PairSeq2B$(Length), PairSeq3A(Length), PairSeq3B$(Length)
-for CurrTerm=1 to Length
+REM Rule 6
+for CurrTerm=2 to Length
   for CurrTerm2=1 to Length
     PairSeq2A(CurrTerm2)=0
     PairSeq2B$(CurrTerm2)=""
@@ -222,12 +223,44 @@ for CurrTerm=1 to Length
   next CurrTerm2
   if Largest=1 then PairSeqC(CurrTerm)=1 endif
 next CurrTerm
+REM Rule 3
+for CurrTerm=2 to Length
+  for CurrTerm2=1 to Length
+    PairSeq2A(CurrTerm2)=0
+    PairSeq2B$(CurrTerm2)=""
+  next CurrTerm2
+  for CurrTerm2=CurrTerm to Length
+    PairSeq2A(CurrTerm2-CurrTerm+1)=PairSeqA(CurrTerm2)-PairSeqA(CurrTerm)
+    PairSeq2B$(CurrTerm2-CurrTerm+1)=PairSeqB$(CurrTerm2)
+  next CurrTerm2
+  Smaller=0
+  for CurrTerm2=1 to Length
+    if (not PairSeqA(CurrTerm2)=PairSeq2A(CurrTerm2)) or (not PairSeqB$(CurrTerm2)=PairSeq2B$(CurrTerm2)) then break endif
+  next CurrTerm2
+  if not PairSeqA(CurrTerm2)=PairSeq2A(CurrTerm2) then
+    if PairSeq2A(CurrTerm2)<PairSeqA(CurrTerm2) then Smaller=1 endif
+  else
+    if PairSeq2B$(CurrTerm2)="0" or PairSeqB$(CurrTerm2)=str$(Sys+1) then Smaller=1 endif
+  endif
+  if Smaller=1 then PairSeqC(CurrTerm)=2 endif
+next CurrTerm
+for CurrTerm=2 to Length
+  for CurrTerm2=CurrTerm to 1 step -1
+    if PairSeqA(CurrTerm2)<PairSeqA(CurrTerm) then break endif
+  next CurrTerm2
+  if PairSeqC(CurrTerm2)=2 then PairSeqC(CurrTerm)=2 endif
+next CurrTerm
+REM Output
 Output$=""
 for CurrTerm=1 to Length
-  if PairSeqC(CurrTerm)=1 then
-    Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+",red)"
-  else
+  if PairSeqC(CurrTerm)=0 then
     Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+")"
+  else
+    if PairSeqC(CurrTerm)=1 then
+      Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+",red)"
+    else
+      Output$=Output$+"("+str$(PairSeqA(CurrTerm))+","+PairSeqB$(CurrTerm)+",gray)"
+    endif
   endif
 next CurrTerm
 print("Hydra: "+Output$)
