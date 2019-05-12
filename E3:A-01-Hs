@@ -11,7 +11,6 @@ for CurrChar=1 to len(Seq$)
   if CurrChar$>="0" and CurrChar$<="9" then PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(CurrChar$) endif
 next CurrChar
 Length=CurrTerm
-print "LEN"+str$(Length)
 if PriSeq(0)>0 then exit endif
 REM Output
 for Term=0 to Length
