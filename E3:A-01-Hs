@@ -1,0 +1,110 @@
+REM Input: E3:A-01-Hs Sequence
+REM Output: Expansion
+REM Subscript is L_0(0)
+input ""Seq$
+dim PriSeq(1)
+CurrTerm=0
+for CurrChar=1 to len(Seq$)
+  if CurrTerm>0 then dim PriSeq(CurrTerm) endif
+  CurrChar$=mid$(Seq$,CurrChar,1)
+  if CurrChar$="," then CurrTerm=CurrTerm+1 endif
+  if CurrChar$>="0" and CurrChar$<="9" then PriSeq(CurrTerm)=PriSeq(CurrTerm)*10+val(CurrChar$) endif
+next CurrChar
+Length=CurrTerm
+print "LEN"+str$(Length)
+if PriSeq(0)>0 then exit endif
+REM Output
+for Term=0 to Length
+  Output$=Output$+str$(PriSeq(Term))
+  Output$=Output$+","
+next Term
+print "Sequence: ("+left$(Output$,len(Output$)-1)+")"
+if PriSeq(Length)=0 then
+  REM Successor case
+  print("Successor case")
+  Output$=""
+  for Term=0 to Length-1
+    Output$=Output$+str$(PriSeq(Term))
+    Output$=Output$+","
+  next Term
+  print "Expansion: ("+left$(Output$,len(Output$)-1)+")"
+  exit
+endif
+REM Limit case
+print("Limit case")
+REM Calculate M
+M=0
+l=0
+for SubSeqStart=0 to Length
+  for SubSeqEnd=SubSeqStart to Length
+    if SubSeqEnd>SubSeqStart and PriSeq(SubSeqEnd)-PriSeq(SubSeqEnd-1)<=0 then break endif
+    SubSeqLen=SubSeqEnd-SubSeqStart+1
+    Valid=0
+    for e=1 to SubSeqLen
+      REM Separate subsequence into e+1 parts
+      if mod(SubSeqLen,e+1)=0 then
+        Valid2=1
+        g=PriSeq(SubSeqStart+SubSeqLen/(e+1))-PriSeq(SubSeqStart)
+        for Term=SubSeqStart to SubSeqEnd-SubSeqLen/(e+1)
+          if not PriSeq(Term+SubSeqLen/(e+1))-PriSeq(Term)=g then
+            Valid2=0
+            break
+          endif
+        next Term
+        if Valid2=1 then Valid=1 endif
+      endif
+    next e
+    if Valid=1 and M<SubSeqLen then
+      M=SubSeqLen
+      l=SubSeqStart
+    endif
+  next SubSeqEnd
+next SubSeqStart
+print "M="+str$(M)
+print "l="+str$(l)
+REM Calculate D sequence
+dim d(Length)
+for CurrTerm=1 to Length
+  d(CurrTerm)=PriSeq(CurrTerm)-PriSeq(CurrTerm-1)
+next
+d(l)=min(d(l),-M-1)
+d(Length)=max(d(Length),-M)
+REM Output D
+Output$=""
+for CurrTerm=1 to Length
+  Output$=Output$+str$(d(CurrTerm))+","
+next CurrTerm
+print "d=(-inf,"+left$(Output$,len(Output$)-1)+")"
+REM Search bad root
+for BR=Length to 1 step -1
+  if PriSeq(BR)<PriSeq(Length) and d(BR)<d(Length) then break endif
+next BR
+if not (PriSeq(BR)<PriSeq(Length) and d(BR)<d(Length)) then BR=0 endif
+print "r="+str$(BR)
+BadLength=Length-BR
+REM Calculate delta
+Delta=PriSeq(Length)-PriSeq(BR)-1
+print "Delta="+str$(Delta)
+REM Remove last term
+PriSeq(Length)=0
+Length=Length-1
+REM Expansion
+for Repetition=0 to 4
+  dim PriSeq(Length+BadLength)
+  for CurrTerm=1 to BadLength
+    PriSeq(Length+CurrTerm)=PriSeq(BR+CurrTerm-1)+(Repetition+1)*Delta
+  next CurrTerm
+  Length=Length+BadLength
+next Repetition
+Output$=""
+for CurrTerm=0 to BR-1
+  Output$=Output$+str$(PriSeq(CurrTerm))+","
+next CurrTerm
+if Output$="" then Output$="|" else right$(Output$,1)="|" endif
+for Repetition=0 to 4
+  for CurrTerm=BR+Repetition*BadLength to BR+(Repetition+1)*BadLength-1
+    Output$=Output$+str$(PriSeq(CurrTerm))+","
+  next CurrTerm
+  right$(Output$,1)="|"
+next Repetition
+print "("+Output$+"...)"
