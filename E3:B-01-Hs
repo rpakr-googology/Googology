@@ -74,7 +74,7 @@ REM Row 1
 for CurrColumn=1 to ColumnCount
   if Matrix(CurrColumn,0)>0 then
     for CurrColumn2=CurrColumn to 0 step -1
-      if Matrix(CurrColumn2,0)<Matrix(CurrColumn,0) then 
+      if Matrix(CurrColumn2,0)+1=Matrix(CurrColumn,0) then 
         p(CurrColumn,0)=CurrColumn2
         break
       endif
@@ -90,7 +90,7 @@ for CurrRow=1 to RowCount
       CurrColumn2=CurrColumn
       for Rept=1 to CurrColumn
         CurrColumn2=p(CurrColumn2,CurrRow-1)
-        if Matrix(CurrColumn2,CurrRow)<Matrix(CurrColumn,CurrRow) then 
+        if Matrix(CurrColumn2,CurrRow)+1=Matrix(CurrColumn,CurrRow) then 
           p(CurrColumn,CurrRow)=CurrColumn2
           break
         endif
