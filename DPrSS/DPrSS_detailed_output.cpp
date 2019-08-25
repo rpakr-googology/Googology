@@ -107,7 +107,7 @@ int main() {
 					cout << "Bad root: entry " << r + 1 << ", " << seq[r] << endl; 
 					seq.pop_back();
 					length--;
-					for (int rept = 0; rept < bracket; rept++){
+					for (int rept = 0; rept < bracket - 1; rept++){
 						for (int i = r; i < k; i++){
 							seq.push_back(seq[i]);
 							length++;
@@ -186,7 +186,7 @@ int main() {
 							seq.pop_back();
 							length--;
 						}
-						for (int rept = 0; rept < bracket; rept++){
+						for (int rept = 0; rept < bracket - 1; rept++){
 							for (int i = r2; i < r; i++){
 								seq.push_back(seq[i] + delta * (rept + 1));
 								length++;
@@ -216,7 +216,7 @@ int main() {
 						cout << "Delta: " << delta << endl;
 						seq.pop_back();
 						length--;
-						for (int rept = 0; rept < bracket; rept++){
+						for (int rept = 0; rept < bracket - 1; rept++){
 							for (int i = r3; i < k; i++){
 								seq.push_back(seq[i] + delta * (rept + 1));
 								length++;
