@@ -31,7 +31,7 @@ int main() {
 				} else{
 					seq[seq.size()] = seq.back() * 10 + (c - '0');
 				}
-			} else if (c = ','){
+			} else if (c == ','){
 				k++;
 				if (!isdigit(str[cchar + 1])){
 					valid = false;
