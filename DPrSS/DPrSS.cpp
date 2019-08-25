@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 int main() {
-	cout << "DPrSS expansion with detailed output" << endl;
+	cout << "DPrSS expansion" << endl;
 	cout << "Please input sequence and bracket" << endl;
 	cout << "Input 0 to quit" << endl;
 	cout << endl;
