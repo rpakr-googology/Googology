@@ -76,7 +76,7 @@ int main() {
 		if (valid){
 			if (str[1] == ')'){
 				//Base case
-				cout << bracket + 1 << endl;
+				cout << bracket << endl;
 				cout << "(Base case)" << endl;
 			} else if (seq.back() == 1){
 				//Successor case
