@@ -28,8 +28,8 @@ int main() {
 			if (isdigit(c)){
 				if (k == seq.size()){
 					seq.push_back(c - '0');
-				} else{
-					seq[seq.size()] = seq.back() * 10 + (c - '0');
+				} else {
+					seq[seq.size() - 1] = seq.back() * 10 + (c - '0');
 				}
 			} else if (c == ','){
 				k++;
@@ -116,7 +116,7 @@ int main() {
 						cout << seq[i] << ',';
 					}
 					cout << seq[length] << ')';
-					cout << '[' << bracket << ']'<< endl;
+					cout << '[' << bracket << ']' << endl;
 				} else {
 					//Parent search
 					int p[k + 1];
@@ -185,7 +185,7 @@ int main() {
 							cout << seq[i] << ',';
 						}
 						cout << seq[length] << ')';
-						cout << '[' << bracket << ']'<< endl;
+						cout << '[' << bracket << ']' << endl;
 					} else {
 						//Bad root search
 						int r3;
