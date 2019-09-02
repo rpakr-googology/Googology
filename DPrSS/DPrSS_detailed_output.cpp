@@ -176,9 +176,9 @@ int main() {
 					}
 					seq.pop_back();
 					//Adding rule check
+					cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
+					cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
 					if (r + i == k && seq[k] - seq[r] == seq[r2 + i] - seq[r2] + 1){
-						cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
-						cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
 						//Expansion
 						int delta = seq[r] - seq[r2];
 						cout << "Delta: " << delta << endl;
@@ -201,26 +201,20 @@ int main() {
 						cout << '[' << bracket << ']' << endl;
 						cout << "(Linear case)" << endl;
 					} else {
-						//Bad root search
-						int r3;
-						i = k;
-						while (p[i] > r2){
-							i = p[i];
-							if (n[i] == 1){
-								r3 = i;
-							}
-						}
-						cout << "Bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
 						//Expansion
-						int delta = seq[k] - seq[r3] - 1;
+						int delta = seq[k] - seq[r2 + 1] - 1;
 						cout << "Delta: " << delta << endl;
 						seq.pop_back();
 						length--;
 						for (int rept = 0; rept < bracket - 1; rept++){
-							for (int i = r3; i < k; i++){
+							for (int i = r2 + 1; i < k; i++){
 								seq.push_back(seq[i] + delta * (rept + 1));
 								length++;
 							}
+						}
+						for (int i = 0; i < k - r; i++){
+							seq.pop_back();
+							length--;
 						}
 						//Output
 						cout << "(";
