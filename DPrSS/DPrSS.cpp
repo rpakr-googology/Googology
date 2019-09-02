@@ -187,24 +187,19 @@ int main() {
 						cout << seq[length] << ')';
 						cout << '[' << bracket << ']' << endl;
 					} else {
-						//Bad root search
-						int r3;
-						i = k;
-						while (p[i] > r2){
-							i = p[i];
-							if (n[i] == 1){
-								r3 = i;
-							}
-						}
 						//Expansion
-						int delta = seq[k] - seq[r3] - 1;
+						int delta = seq[k] - seq[r2 + 1] - 1;
 						seq.pop_back();
 						length--;
 						for (int rept = 0; rept < bracket - 1; rept++){
-							for (int i = r3; i < k; i++){
+							for (int i = r2 + 1; i < k; i++){
 								seq.push_back(seq[i] + delta * (rept + 1));
 								length++;
 							}
+						}
+						for (int i = 0; i < k - r; i++){
+							seq.pop_back();
+							length--;
 						}
 						//Output
 						cout << "(";
