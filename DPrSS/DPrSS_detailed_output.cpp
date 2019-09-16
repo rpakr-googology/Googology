@@ -2,236 +2,244 @@
 #include <bits/stdc++.h>
 using namespace std;
 int main() {
-	cout << "DPrSS expansion with detailed output" << endl;
-	cout << "Please input sequence and bracket" << endl;
-	cout << "Input 0 to quit" << endl;
-	cout << endl;
 	string str;
 	cin >> str;
 	vector<int> seq;
-	while (str != "0"){
-		//Initializing sequence
-		seq.clear();
-		//Reading input
-		char c = str[1];
-		bool valid = true;
-		if (str.front() != '('){
+	//Initializing sequence
+	seq.clear();
+	//Reading input
+	char c = str[1];
+	bool valid = true;
+	if (str.front() != '('){
+		valid = false;
+	}
+	if (str.back() != ']'){
+		valid = false;
+	}
+	int k = 0;
+	int cchar;
+	for (cchar = 1; cchar <= str.size() - 1 && (str[cchar] != ')'); cchar++){
+		c = str[cchar];
+		if (isdigit(c)){
+			if (k == seq.size()){
+				seq.push_back(c - '0');
+			} else {
+				seq[seq.size() - 1] = seq.back() * 10 + (c - '0');
+			}
+		} else if (c == ','){
+			k++;
+			if (!isdigit(str[cchar + 1])){
+				valid = false;
+			}
+			if (!isdigit(str[cchar - 1])){
+				valid = false;
+			}
+		} else {
 			valid = false;
 		}
-		if (str.back() != ']'){
-			valid = false;
-		}
-		int k = 0;
-		int cchar;
-		for (cchar = 1; cchar <= str.size() - 1 && (str[cchar] != ')'); cchar++){
+	}
+	if (cchar >= str.size() - 2){
+		valid = false;
+	}
+	int bracket;
+	if (str[cchar + 1] != '['){
+		valid = false;
+	} else {
+		for (cchar = cchar + 2; cchar <= str.size() - 2; cchar++){
 			c = str[cchar];
 			if (isdigit(c)){
-				if (k == seq.size()){
-					seq.push_back(c - '0');
+				if (str[cchar - 1] == '['){
+					bracket = c - '0';
 				} else {
-					seq[seq.size() - 1] = seq.back() * 10 + (c - '0');
-				}
-			} else if (c == ','){
-				k++;
-				if (!isdigit(str[cchar + 1])){
-					valid = false;
-				}
-				if (!isdigit(str[cchar - 1])){
-					valid = false;
+					bracket = bracket * 10 + (c - '0');
 				}
 			} else {
 				valid = false;
 			}
 		}
-		if (cchar >= str.size() - 2){
+	}
+	if (str[1] != ')'){
+		if (seq[0] != 1){
 			valid = false;
 		}
-		int bracket;
-		if (str[cchar + 1] != '['){
+	}
+	for (int i = 0; i <= k - 1; i++){
+		if (seq[i] < seq[0]){
 			valid = false;
+		}
+	}
+	if (valid){
+		if (str[1] == ')'){
+			//Base case
+			cout << bracket << endl;
+			cout << "(Base case)" << endl;
+		} else if (seq.back() == 1){
+			//Successor case
+			if (str[2] == ')'){
+				cout << "()[" << bracket + 1 << "]" << endl;
+			} else {
+				cout << '(';
+				for (int i = 0; i <= k - 2; i++){
+					cout << seq[i] << ',';
+				}
+				cout << seq[k - 1] << ')';
+				cout << '[' << bracket + 1 << ']' << endl;
+			}
+			cout << "(Successor case)" << endl;
 		} else {
-			for (cchar = cchar + 2; cchar <= str.size() - 2; cchar++){
-				c = str[cchar];
-				if (isdigit(c)){
-					if (str[cchar - 1] == '['){
-						bracket = c - '0';
-					} else {
-						bracket = bracket * 10 + (c - '0');
-					}
-				} else {
-					valid = false;
+			//Limit case
+			//Parent search
+			int r;
+			for (int i = k; i >= 0; i--){
+				r = i;
+				if (seq[i] < seq.back()){
+					break;
 				}
 			}
-		}
-		if (str[1] != ')'){
-			if (seq[0] != 1){
-				valid = false;
-			}
-		}
-		for (int i = 0; i <= k - 1; i++){
-			if (seq[i] < seq[0]){
-				valid = false;
-			}
-		}
-		if (valid){
-			if (str[1] == ')'){
-				//Base case
-				cout << bracket << endl;
-				cout << "(Base case)" << endl;
-			} else if (seq.back() == 1){
-				//Successor case
-				if (str[2] == ')'){
-					cout << "()[" << bracket + 1 << "]" << endl;
-				} else {
-					cout << '(';
-					for (int i = 0; i <= k - 2; i++){
-						cout << seq[i] << ',';
+			int length = k;
+			if (seq.back() - seq[r] == 1){
+				//Constant case
+				cout << "Bad root: entry " << r + 1 << ", " << seq[r] << endl; 
+				seq.pop_back();
+				length--;
+				for (int rept = 0; rept < bracket - 1; rept++){
+					for (int i = r; i < k; i++){
+						seq.push_back(seq[i]);
+						length++;
 					}
-					cout << seq[k - 1] << ')';
-					cout << '[' << bracket + 1 << ']' << endl;
 				}
-				cout << "(Successor case)" << endl;
+				//Output
+				cout << '(';
+				for (int i = 0; i < length ; i++){
+					cout << seq[i] << ',';
+				}
+				cout << seq[length] << ')';
+				cout << '[' << bracket << ']' << endl;
+				cout << "(Constant case)" << endl;
 			} else {
-				//Limit case
 				//Parent search
-				int r;
-				for (int i = k; i >= 0; i--){
-					r = i;
-					if (seq[i] < seq.back()){
-						break;
+				int p[k + 1];
+				p[0] = -1;
+				for (int i = 1; i <= k; i++){
+					if (seq[i] == 1){
+						p[i] = -1;
+					} else {
+						for (int j = i; j >= 0; j--){
+							p[i] = j;
+							if (seq[j] < seq[i]){
+								break;
+							}
+						}
 					}
 				}
-				int length = k;
-				if (seq.back() - seq[r] == 1){
-					//Constant case
-					cout << "Bad root: entry " << r + 1 << ", " << seq[r] << endl; 
-					seq.pop_back();
-					length--;
+				//Find node value
+				int n[k + 2];
+				for (int i = 0; i <= k; i++){
+					if (seq[i] == 1){
+						n[i] = 1;
+					} else {
+						n[i] = seq[i] - seq[p[i]];
+					}
+				}
+				n[k + 1] = 0;
+				//Output node values
+				cout << "Node values: (";
+				for (int i = 0; i < k; i++){
+					cout << n[i] << ',';
+				}
+				cout << n[k] << ')' << endl;
+				//Root search 1
+				r = k;
+				while (n[r] == 2){
+					r = p[r];
+				}
+				//Root search 2
+				int r2 = r;
+				int i;
+				seq.push_back(0);
+				while (r2 >= 0){
+					r2 = p[r2];
+					if (n[r2] == 1){
+						i = 0;
+    					while (seq[r2 + i] - seq[r2] == seq[r + i] - seq[r]){
+							i++;
+						}
+						if (seq[r2 + i] - seq[r2] < seq[r + i] - seq[r]){
+							break;
+						}
+					}
+    			}
+				seq.pop_back();
+				//Adding rule check
+				cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
+				cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
+				if (r + i == k && seq[k] - seq[r] == seq[r2 + i] - seq[r2] + 1){
+					//Expansion
+					int delta = seq[r] - seq[r2];
+					cout << "Delta: " << delta << endl;
+					for (int i = k; i >= r; i--){
+						seq.pop_back();
+						length--;
+					}
 					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int i = r; i < k; i++){
-							seq.push_back(seq[i]);
+						for (int i = r2; i < r; i++){
+							seq.push_back(seq[i] + delta * (rept + 1));
 							length++;
 						}
 					}
 					//Output
 					cout << '(';
-					for (int i = 0; i < length ; i++){
+					for (int i = 0; i < length; i++){
 						cout << seq[i] << ',';
 					}
 					cout << seq[length] << ')';
 					cout << '[' << bracket << ']' << endl;
-					cout << "(Constant case)" << endl;
+					cout << "(Linear case)" << endl;
 				} else {
-					//Parent search
-					int p[k + 1];
-					p[0] = -1;
-					for (int i = 1; i <= k; i++){
-						if (seq[i] == 1){
-							p[i] = -1;
-						} else {
-							for (int j = i; j >= 0; j--){
-								p[i] = j;
-								if (seq[j] < seq[i]){
-									break;
-								}
-							}
-						}
-					}
-					//Find node value
-					int n[k + 2];
-					for (int i = 0; i <= k; i++){
-						if (seq[i] == 1){
-							n[i] = 1;
-						} else {
-							n[i] = seq[i] - seq[p[i]];
-						}
-					}
-					n[k + 1] = 0;
-					//Output node values
-					cout << "Node values: (";
-					for (int i = 0; i < k; i++){
-						cout << n[i] << ',';
-					}
-					cout << n[k] << ')' << endl;
-					//Root search 1
-					r = k;
-					while (n[r] == 2){
-						r = p[r];
-					}
-					//Root search 2
-					int r2 = r;
-					int i;
-					seq.push_back(0);
-					while (r2 >= 0){
-						r2 = p[r2];
-						if (n[r2] == 1){
-							i = 0;
-							while (seq[r2 + i] - seq[r2] == seq[r + i] - seq[r]){
-								i++;
-							}
-							if (seq[r2 + i] - seq[r2] < seq[r + i] - seq[r]){
-								break;
-							}
-						}
-					}
+				    //Bad root search
+				    int r3 = r;
+				    int ancs = r;
+				    while (true){
+				        i = ancs;
+				        while (seq[i] >= seq[ancs]){
+				            i--;
+				        }
+				        ancs = i;
+				        if (ancs > r2){
+				            r3 = ancs;
+				        } else {
+				            break;
+				        }
+				    }
+				    cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
+					//Expansion
+					int delta = seq[k] - seq[r3] - 1;
+					cout << "Delta: " << delta << endl;
 					seq.pop_back();
-					//Adding rule check
-					cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
-					cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
-					if (r + i == k && seq[k] - seq[r] == seq[r2 + i] - seq[r2] + 1){
-						//Expansion
-						int delta = seq[r] - seq[r2];
-						cout << "Delta: " << delta << endl;
-						for (int i = k; i >= r; i--){
-							seq.pop_back();
-							length--;
+					length--;
+					for (int rept = 0; rept < bracket - 1; rept++){
+						for (int i = r3; i < k; i++){
+							seq.push_back(seq[i] + delta * (rept + 1));
+							length++;
 						}
-						for (int rept = 0; rept < bracket - 1; rept++){
-							for (int i = r2; i < r; i++){
-								seq.push_back(seq[i] + delta * (rept + 1));
-								length++;
-							}
-						}
-						//Output
-						cout << '(';
-						for (int i = 0; i < length; i++){
-							cout << seq[i] << ',';
-						}
-						cout << seq[length] << ')';
-						cout << '[' << bracket << ']' << endl;
-						cout << "(Linear case)" << endl;
-					} else {
-						//Expansion
-						int delta = seq[k] - seq[r2 + 1] - 1;
-						cout << "Delta: " << delta << endl;
+					}
+					for (int i = 0; i < k - r; i++){
 						seq.pop_back();
 						length--;
-						for (int rept = 0; rept < bracket - 1; rept++){
-							for (int i = r2 + 1; i < k; i++){
-								seq.push_back(seq[i] + delta * (rept + 1));
-								length++;
-							}
-						}
-						for (int i = 0; i < k - r; i++){
-							seq.pop_back();
-							length--;
-						}
-						//Output
-						cout << "(";
-						for (int i = 0; i < length; i++){
-							cout << seq[i] << ',';
-						}
-						cout << seq[length] << ')';
-						cout << '[' << bracket << ']' << endl;
-						cout << "(Adding case)" << endl;
 					}
+					//Output
+					cout << "(";
+					for (int i = 0; i < length; i++){
+						cout << seq[i] << ',';
+					}
+					cout << seq[length] << ')';
+					cout << '[' << bracket << ']' << endl;
+					cout << "(Adding case)" << endl;
 				}
 			}
-		} else {
-			cout << "Sequence invalid" << endl;
 		}
-		cout << endl;
-		cin >> str;
+	} else {
+		cout << "Sequence invalid" << endl;
 	}
 	return 0;
 }
