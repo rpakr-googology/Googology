@@ -196,22 +196,15 @@ int main() {
 					cout << '[' << bracket << ']' << endl;
 					cout << "(Linear case)" << endl;
 				} else {
-				    //Bad root search
-				    int r3 = r;
-				    int ancs = r;
-				    while (true){
-				        i = ancs;
-				        while (seq[i] >= seq[ancs]){
-				            i--;
-				        }
-				        ancs = i;
-				        if (ancs > r2){
-				            r3 = ancs;
-				        } else {
-				            break;
-				        }
-				    }
-				    cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
+					    //Bad root search
+					int r3 = r;
+					for (i = r2; i < k; i++){
+						if (seq[i] == seq[r2] + 1){
+							r3 = i;
+							break;
+						}
+					}
+					cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
 					//Expansion
 					int delta = seq[k] - seq[r3] - 1;
 					cout << "Delta: " << delta << endl;
