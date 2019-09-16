@@ -182,21 +182,14 @@ int main() {
 					cout << seq[length] << ')';
 					cout << '[' << bracket << ']' << endl;
 				} else {
-				    //Bad root search
-				    int r3 = r;
-				    int ancs = r;
-				    while (true){
-				        i = ancs;
-				        while (seq[i] >= seq[ancs]){
-				            i--;
-				        }
-				        ancs = i;
-				        if (ancs > r2){
-				            r3 = ancs;
-				        } else {
-				            break;
-				        }
-				    }
+					//Bad root search
+					int r3 = r;
+					for (i = r2; i < k; i++){
+						if (seq[i] == seq[r2] + 1){
+							r3 = i;
+							break;
+						}
+					}
 					//Expansion
 					int delta = seq[k] - seq[r3] - 1;
 					seq.pop_back();
@@ -224,5 +217,5 @@ int main() {
 	} else {
 		cout << "Sequence invalid" << endl;
 	}
-    return 0;
+	return 0;
 }
