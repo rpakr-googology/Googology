@@ -173,7 +173,7 @@ int main() {
 				//Adding rule check
 				cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
 				cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
-				if (r + i == k && seq[k] - seq[r] == seq[r2 + i] - seq[r2] + 1){
+				if (r + i == k && seq[r + i] - seq[r] == seq[r2 + i] - seq[r2] + 1 && p[r2 + i + 1] == r2 + i){
 					//Expansion
 					int delta = seq[r] - seq[r2];
 					cout << "Delta: " << delta << endl;
@@ -196,7 +196,7 @@ int main() {
 					cout << '[' << bracket << ']' << endl;
 					cout << "(Linear case)" << endl;
 				} else {
-					    //Bad root search
+					//Bad root search
 					int r3 = r;
 					for (i = r2; i < k; i++){
 						if (seq[i] == seq[r2] + 1){
