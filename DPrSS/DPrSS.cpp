@@ -161,7 +161,7 @@ int main() {
 				}
 				seq.pop_back();
 				//Adding rule check
-				if (r + i == k && seq[k] - seq[r] == seq[r2 + i] - seq[r2] + 1){
+				if (r + i == k && seq[r + i] - seq[r] == seq[r2 + i] - seq[r2] + 1 && p[r2 + i + 1] == r2 + i){
 					//Expansion
 					int delta = seq[r] - seq[r2];
 					for (int i = k; i >= r; i--){
