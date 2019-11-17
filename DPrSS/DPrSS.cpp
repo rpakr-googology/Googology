@@ -185,7 +185,7 @@ int main() {
 					//Bad root search
 					int r3 = r;
 					for (i = r2; i < k; i++){
-						if (seq[i] == seq[r2] + 1){
+						if (p[i] == p[r] && seq[i] == seq[p[i]] + 1){
 							r3 = i;
 							break;
 						}
