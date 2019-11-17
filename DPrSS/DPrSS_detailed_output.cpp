@@ -170,71 +170,40 @@ int main() {
 					}
     			}
 				seq.pop_back();
-				//Adding rule check
 				cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
 				cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
-				bool LC = true;
-				if (r + i != k) LC = false;
-				if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) LC = false;
-				for (int j = r2 + i + 1; j < k; j++){
-				    if (seq[j] <= seq[r2 + i]) LC = false;
+				//Bad root search
+				int r3 = r;
+				for (int j = r2; j < k; j++){
+					if (p[j] == p[r] && seq[j] == seq[p[j]] + 1){
+						r3 = j;
+						break;
+					}
 				}
-				if (LC){
-					//Expansion
-					int delta = seq[r] - seq[r2];
-					cout << "Delta: " << delta << endl;
-					for (int j = k; j >= r; j--){
-						seq.pop_back();
-						length--;
+				cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
+				//Expansion
+				int delta = seq[k] - seq[r3] - 1;
+				cout << "Delta: " << delta << endl;
+				seq.pop_back();
+				length--;
+				for (int rept = 0; rept < bracket - 1; rept++){
+					for (int j = r3; j < k; j++){
+						seq.push_back(seq[j] + delta * (rept + 1));
+						length++;
 					}
-					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int j = r2; j < r; j++){
-							seq.push_back(seq[j] + delta * (rept + 1));
-							length++;
-						}
-					}
-					//Output
-					cout << '(';
-					for (int j = 0; j < length; j++){
-						cout << seq[j] << ',';
-					}
-					cout << seq[length] << ')';
-					cout << '[' << bracket << ']' << endl;
-					cout << "(Linear case)" << endl;
-				} else {
-					//Bad root search
-					int r3 = r;
-					for (int j = r2; j < k; j++){
-						if (p[j] == p[r] && seq[j] == seq[p[j]] + 1){
-							r3 = j;
-							break;
-						}
-					}
-					cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
-					//Expansion
-					int delta = seq[k] - seq[r3] - 1;
-					cout << "Delta: " << delta << endl;
+				}
+				for (int j = 0; j < k - r; j++){
 					seq.pop_back();
 					length--;
-					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int j = r3; j < k; j++){
-							seq.push_back(seq[j] + delta * (rept + 1));
-							length++;
-						}
-					}
-					for (int j = 0; j < k - r; j++){
-						seq.pop_back();
-						length--;
-					}
-					//Output
-					cout << "(";
-					for (int j = 0; j < length; j++){
-						cout << seq[j] << ',';
-					}
-					cout << seq[length] << ')';
-					cout << '[' << bracket << ']' << endl;
-					cout << "(Adding case)" << endl;
 				}
+				//Output
+				cout << "(";
+				for (int j = 0; j < length; j++){
+					cout << seq[j] << ',';
+				}
+				cout << seq[length] << ')';
+				cout << '[' << bracket << ']' << endl;
+				cout << "(Linear case)" << endl;
 			}
 		}
 	} else {
