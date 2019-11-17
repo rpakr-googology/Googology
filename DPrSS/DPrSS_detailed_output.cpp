@@ -148,12 +148,12 @@ int main() {
 					cout << n[i] << ',';
 				}
 				cout << n[k] << ')' << endl;
-				//BR search 1
+				//CR search
 				r = k;
 				while (n[r] == 2){
 					r = p[r];
 				}
-				//BR search 2
+				//BR search
 				int r2 = r;
 				int i;
 				seq.push_back(0);
@@ -202,7 +202,7 @@ int main() {
 					cout << '[' << bracket << ']' << endl;
 					cout << "(Linear case)" << endl;
 				} else {
-					//Bad root search
+					//BR search 2
 					int r3 = r;
 					for (int j = r2; j < k; j++){
 						if (p[j] == p[r] && seq[j] == seq[p[j]] + 1){
