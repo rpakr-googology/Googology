@@ -148,58 +148,40 @@ int main() {
 					cout << n[i] << ',';
 				}
 				cout << n[k] << ')' << endl;
-				//BR search 1
+				//CR search 
 				r = k;
 				while (n[r] == 2){
 					r = p[r];
 				}
-				//BR search 2
-				int r2 = r;
-				int i;
-				seq.push_back(0);
-				while (r2 >= 0){
-					r2 = p[r2];
-					if (n[r2] == 1){
-						i = 0;
-    					while (seq[r2 + i] - seq[r2] == seq[r + i] - seq[r]){
-							i++;
-						}
-						if (seq[r2 + i] - seq[r2] < seq[r + i] - seq[r]){
-							break;
-						}
-					}
-    			}
-				seq.pop_back();
 				cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
-				cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
-				//Bad root search
-				int r3 = r;
-				for (int j = r2; j < k; j++){
-					if (p[j] == p[r] && seq[j] == seq[p[j]] + 1){
-						r3 = j;
+				//BR search
+				int r2 = r;
+				for (int i = p[r]; i < k; i++){
+					if (p[i] == p[r] && n[i] == 1){
+						r2 = i;
 						break;
 					}
 				}
-				cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
+				cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
 				//Expansion
-				int delta = seq[k] - seq[r3] - 1;
+				int delta = seq[k] - seq[r2] - 1;
 				cout << "Delta: " << delta << endl;
 				seq.pop_back();
 				length--;
 				for (int rept = 0; rept < bracket - 1; rept++){
-					for (int j = r3; j < k; j++){
-						seq.push_back(seq[j] + delta * (rept + 1));
+					for (int i = r2; i < k; i++){
+						seq.push_back(seq[i] + delta * (rept + 1));
 						length++;
 					}
 				}
-				for (int j = 0; j < k - r; j++){
+				for (int i = 0; i < k - r; i++){
 					seq.pop_back();
 					length--;
 				}
 				//Output
 				cout << "(";
-				for (int j = 0; j < length; j++){
-					cout << seq[j] << ',';
+				for (int i = 0; i < length; i++){
+					cout << seq[i] << ',';
 				}
 				cout << seq[length] << ')';
 				cout << '[' << bracket << ']' << endl;
