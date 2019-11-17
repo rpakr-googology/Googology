@@ -148,12 +148,12 @@ int main() {
 					cout << n[i] << ',';
 				}
 				cout << n[k] << ')' << endl;
-				//Root search 1
+				//BR search 1
 				r = k;
 				while (n[r] == 2){
 					r = p[r];
 				}
-				//Root search 2
+				//BR search 2
 				int r2 = r;
 				int i;
 				seq.push_back(0);
@@ -173,24 +173,30 @@ int main() {
 				//Adding rule check
 				cout << "Cut root: entry " << r + 1 << ", " << seq[r] << endl;
 				cout << "Bad root: entry " << r2 + 1 << ", " << seq[r2] << endl;
-				if (r + i == k && seq[r + i] - seq[r] == seq[r2 + i] - seq[r2] + 1 && p[r2 + i + 1] == r2 + i){
+				bool LC = true;
+				if (r + i != k) LC = false;
+				if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) LC = false;
+				for (int j = r2 + i + 1; j < k; j++){
+				    if (seq[j] <= seq[r2 + i]) LC = false;
+				}
+				if (LC){
 					//Expansion
 					int delta = seq[r] - seq[r2];
 					cout << "Delta: " << delta << endl;
-					for (int i = k; i >= r; i--){
+					for (int j = k; j >= r; j--){
 						seq.pop_back();
 						length--;
 					}
 					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int i = r2; i < r; i++){
-							seq.push_back(seq[i] + delta * (rept + 1));
+						for (int j = r2; j < r; j++){
+							seq.push_back(seq[j] + delta * (rept + 1));
 							length++;
 						}
 					}
 					//Output
 					cout << '(';
-					for (int i = 0; i < length; i++){
-						cout << seq[i] << ',';
+					for (int j = 0; j < length; j++){
+						cout << seq[j] << ',';
 					}
 					cout << seq[length] << ')';
 					cout << '[' << bracket << ']' << endl;
@@ -198,9 +204,9 @@ int main() {
 				} else {
 					//Bad root search
 					int r3 = r;
-					for (i = r2; i < k; i++){
-						if (p[i] == p[r] && seq[i] == seq[p[i]] + 1){
-							r3 = i;
+					for (int j = r2; j < k; j++){
+						if (p[j] == p[r] && seq[j] == seq[p[j]] + 1){
+							r3 = j;
 							break;
 						}
 					}
@@ -211,19 +217,19 @@ int main() {
 					seq.pop_back();
 					length--;
 					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int i = r3; i < k; i++){
-							seq.push_back(seq[i] + delta * (rept + 1));
+						for (int j = r3; j < k; j++){
+							seq.push_back(seq[j] + delta * (rept + 1));
 							length++;
 						}
 					}
-					for (int i = 0; i < k - r; i++){
+					for (int j = 0; j < k - r; j++){
 						seq.pop_back();
 						length--;
 					}
 					//Output
 					cout << "(";
-					for (int i = 0; i < length; i++){
-						cout << seq[i] << ',';
+					for (int j = 0; j < length; j++){
+						cout << seq[j] << ',';
 					}
 					cout << seq[length] << ')';
 					cout << '[' << bracket << ']' << endl;
