@@ -177,7 +177,7 @@ int main() {
 				if (r + i != k) LC = false;
 				if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) LC = false;
 				for (int j = r2 + i + 1; j < k; j++){
-				    if (seq[j] <= seq[r2 + i]) LC = false;
+				    if (seq[p[r2 + i]] >= seq[j]) LC = false;
 				}
 				if (LC){
 					//Expansion
@@ -203,9 +203,23 @@ int main() {
 					cout << "(Linear case)" << endl;
 				} else {
 					//BR search 2
-					int r3 = r;
-					for (int j = r2; j < k; j++){
-						if (p[j] == p[r] && seq[j] == seq[p[j]] + 1){
+					int r3 = r2;
+					bool flg = false;
+					while (1){
+						for (int j = k; j > r3; j--){
+							if (p[j] == r3){
+								if (n[j] == 1){
+									flg = true;
+								} else {
+									r3 = j;
+								}
+								break;
+							}
+						}
+						if(flg) break;
+					}
+					for (int j = r3; j < k; j++){
+						if (p[j] == r3 && n[j] == 1){
 							r3 = j;
 							break;
 						}
