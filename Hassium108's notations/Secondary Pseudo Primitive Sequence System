@@ -1,0 +1,144 @@
+//Input: Secondary pseudo pritimive sequence system
+//Output: Expansion
+//Secondary pseudo pritimive sequence system is a notation by googologist 108Hassium
+//Definition: https://twitter.com/1Hassium/status/1207676977710321666
+#include <bits/stdc++.h>
+using namespace std;
+int f(int n) {
+    return n * n;
+}
+int main() {
+	string str;
+	cin >> str;
+	vector<int> seq;
+	//Initializing sequence
+	seq.clear();
+	//Reading input
+	char c = str[1];
+	bool valid = true;
+	if (str.front() != '('){
+		valid = false;
+	}
+	if (str[1] == '('){
+	    valid = false;
+	}
+	if (str.back() != ']'){
+		valid = false;
+	}
+	int k = 0;
+	int cchar;
+	for (cchar = 1; cchar <= str.size() - 1 && (str[cchar] != ')'); cchar++){
+		c = str[cchar];
+		if (isdigit(c)){
+			if (k == seq.size()){
+				seq.push_back(c - '0');
+			} else {
+				seq[seq.size() - 1] = seq.back() * 10 + (c - '0');
+			}
+		} else if (c == ','){
+			k++;
+			if (!isdigit(str[cchar + 1])){
+				valid = false;
+			}
+			if (!isdigit(str[cchar - 1])){
+				valid = false;
+			}
+		} else {
+			valid = false;
+		}
+	}
+	if (cchar >= str.size() - 2){
+		valid = false;
+	}
+	int n;
+	if (str[cchar + 1] != '['){
+		valid = false;
+	} else {
+		for (cchar = cchar + 2; cchar <= str.size() - 2; cchar++){
+			c = str[cchar];
+			if (isdigit(c)){
+				if (str[cchar - 1] == '['){
+					n = c - '0';
+				} else {
+					n = n * 10 + (c - '0');
+				}
+			} else {
+				valid = false;
+			}
+		}
+	}
+	if (valid){
+		if (k == 0 && seq[k] == 0){
+			//Rule 1
+			cout << f(n) << endl;
+			cout << "(Rule 1)" << endl;
+		} else {
+			//Parent search
+			vector<int> p(k + 1);
+			for (int i = 0; i <= k; i++){
+				int r = i;
+				while (r >= 0){
+					if (seq[r] < seq[i]){
+						p[i] = r;
+						break;
+					}
+					r--;
+				}
+			}
+			if (seq[k] == 0 && p[k] == -1){
+                //Rule 2
+                cout << '(';
+                for (int i = 0; i < k - 1; i++){
+                    cout << seq[i] << ',';
+                }
+                cout << seq[k - 1] << ')';
+                cout << '[' << f(n) << ']' << endl;
+                cout << "(Rule 2)" << endl;
+			} else if (p[k] == -1) {
+				//Rule 3
+				cout << '(';
+				for (int i = 0; i < k; i++){
+					cout << seq[i] << ',';
+				}
+				cout << seq[k] - 1 << ')';
+				cout << '[' << f(n) << ']' << endl;
+				cout << "(Rule 3)" << endl;
+			} else if (seq[k] - seq[p[k]] == 1){
+				//Rule 4
+				int r = p[p[k]] + 1;
+				cout << '(';
+				for (int i = 0; i < k - 1; i++){
+					if (i < r){
+						cout << seq[i] << ',';
+					} else {
+					    cout << seq[i] + f(n) << ',';
+					}
+				}
+				cout << seq[k - 1] + f(n) << ')';
+				cout << '[' << f(n) << ']' << endl;
+				cout << "(Rule 4)" << endl;
+			} else {
+				//Rule 5
+				int r = p[k];
+				int length = k + 1;
+				seq[k]--;
+				for (int rept = 0; rept < f(n); rept++){
+					for (int i = r; i <= k; i++){
+						seq.push_back(seq[i]);
+						length++;
+					}
+				}
+				cout << '(';
+				for (int i = 0; i < length; i++){
+					cout << seq[i] << ',';
+				}
+				cout << seq[length] << ')';
+				cout << '[' << f(n) << ']' << endl;
+				cout << "(Rule 5)";
+			}
+		}
+	} else {
+		cout << "Sequence invalid" << endl;
+	}
+	return 0;
+}
