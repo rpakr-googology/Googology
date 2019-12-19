@@ -1,5 +1,5 @@
 //Input: Primary pseudo pritimive sequence system
-//Output: Expansion
+//Output:Expansion
 //Primary pseudo pritimive sequence system is a notation by googologist 108Hassium
 //Definition: https://twitter.com/1Hassium/status/1207676967857934337
 #include <bits/stdc++.h>
@@ -69,10 +69,10 @@ int main() {
 	}
 	if (valid){
 		if (k == 0){
-			//Base case
+			//Rule 1
 			cout << f(n) << endl;
 		} else if (seq.back() == 0){
-			//Successor case
+			//Rule 2
 			cout << '(';
 			for (int i = 0; i <= k - 2; i++){
 				cout << seq[i] << ',';
@@ -80,7 +80,7 @@ int main() {
 			cout << seq[k - 1] << ')';
 			cout << '[' << f(n) << ']' << endl;
 		} else {
-			//Limit case
+			//Rule 3
 			//BR search
 			int r = k;
 			while (r > 0){
