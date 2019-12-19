@@ -1,5 +1,5 @@
 //Input: Primary pseudo pritimive sequence system
-//Output:Expansion
+//Output: Expansion
 //Primary pseudo pritimive sequence system is a notation by googologist 108Hassium
 //Definition: https://twitter.com/1Hassium/status/1207676967857934337
 #include <bits/stdc++.h>
