@@ -1,0 +1,59 @@
+//Bdl function
+//Bdl function is a function by googologist kanrokoti
+//Definition: https://twitter.com/kanrokoti/status/1207920215742271489
+#include <bits/stdc++.h>
+using namespace std;
+int S;
+void Space(){
+    for (int i = 0; i < S; i++){
+        if (i % 5 == 4){
+            cout << '|';
+        } else {
+            cout << ' ';
+        }
+    }
+}
+int Bdl(int p, int q, int r){
+    S++;
+    int res = 0;
+    Space();
+    cout << "Called Bdl(" << p << ',' << q << ',' << r << ')' << endl;
+    if (p == 0){
+        if (q == 0){
+            res = r + 1;
+        } else if (r == 0){
+            Space();
+            cout << "Calling Bdl(" << 0 << ',' << q - 1 << ',' << 1 << ')' << endl;
+            res = Bdl(0, q - 1, 1);
+        } else {
+            Space();
+            cout << "Calling Bdl(" << 0 << ',' << q << ',' << r - 1 << ')' << endl;
+            r = Bdl(0, q, r - 1);
+            Space();
+            cout << "Calling Bdl(" << 0 << ',' << q - 1 << ',' << r << ')' << endl;
+            res = Bdl(0, q - 1, r);
+        }
+    } else if (q == 0){
+        Space();
+        cout << "Calling Bdl(" << p - 1 << ',' << 1 << ',' << r << ')' << endl;
+        res = Bdl(p - 1, 1, r);
+    } else {
+        Space();
+        cout << "Calling Bdl(" << p << ',' << q - 1 << ',' << r << ')' << endl;
+        q = Bdl(p, q - 1, r);
+        Space();
+        cout << "Calling Bdl(" << p - 1 << ',' << q << ',' << r << ')' << endl;
+        res = Bdl(p - 1, q, r);
+    }
+    Space();
+    cout << res << endl;
+    S--;
+    return res;
+}
+int main(){
+    S = 0;
+    int p, q, r;
+    cin >> p >> q >> r;
+    cout << "Calling Bdl(" << p << ',' << q << ',' << r << ')' << endl;
+    Bdl(p, q, r);
+}
