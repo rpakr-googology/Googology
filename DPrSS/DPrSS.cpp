@@ -108,7 +108,7 @@ int main() {
 						cout << seq[i] << ',';
 					}
 					cout << seq[length] << ')';
-						cout << '[' << bracket << ']' << endl;
+					cout << '[' << bracket << ']' << endl;
 				} else {
 					//Parent search
 					int p[k + 1];
