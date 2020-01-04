@@ -133,7 +133,7 @@ int main() {
 					n[k + 1] = 0;
 					//r search
 					r = k;
-					while (n[r] != 1){
+					while (n[r] >= n[k]){
 						r = p[r];
 					}
 					//r2 search
@@ -142,7 +142,7 @@ int main() {
 					seq.push_back(0);
 					while (r2 >= 0){
 						r2 = p[r2];
-						if (n[r2] == 1){
+						if (n[r2] < n[k]){
 							i = 0;
 							while (seq[r2 + i] - seq[r2] == seq[r + i] - seq[r]){
 								i++;
@@ -187,7 +187,7 @@ int main() {
 						while (1){
 							for (int j = k; j > r3; j--){
 								if (p[j] == r3){
-									if (n[j] == 1){
+									if (n[j] < n[k]){
 										flg = true;
 									} else {
 										r3 = j;
