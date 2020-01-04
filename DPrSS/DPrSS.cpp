@@ -60,7 +60,7 @@ int main() {
 	}
 	if (valid){
 		if (str[1] == ')'){
-			//Base case
+			//Rule 1
 			cout << bracket << endl;
 		} else {
 			bool flg = true;
@@ -70,7 +70,7 @@ int main() {
 				} 
 			}
 			if (flg){
-                //Successor case
+                //Rule 2
                 if (str[2] == ')'){
                     cout << "()[" << bracket + 1 << "]" << endl;
                 } else {
@@ -82,7 +82,7 @@ int main() {
 					cout << '[' << bracket + 1 << ']' << endl;
 				}
 			} else {
-				//Limit case
+				//Rule 3,4,5
 				//Parent search
 				int r;
 				for (int i = k; i >= 0; i--){
@@ -93,7 +93,7 @@ int main() {
 				}
 				int length = k;
 				if (seq.back() - seq[r] == 1){
-					//Constant case
+					//Rule 3
 					seq.pop_back();
 					length--;
 					for (int rept = 0; rept < bracket - 1; rept++){
@@ -131,12 +131,12 @@ int main() {
 						}
 					}
 					n[k + 1] = 0;
-					//CR search
+					//r search
 					r = k;
 					while (n[r] != 1){
 						r = p[r];
 					}
-					//BR search
+					//r2 search
 					int r2 = r;
 					int i;
 					seq.push_back(0);
@@ -153,7 +153,7 @@ int main() {
 						}
 					}
 					seq.pop_back();
-					//Adding rule check
+					//Rule 4 check
 					flg = true;
 					if (r + i != k) flg = false;
 					if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) flg = false;
@@ -181,7 +181,7 @@ int main() {
 						cout << seq[length] << ')';
 						cout << '[' << bracket << ']' << endl;
 					} else {
-						//BR search 2
+						//r3 search
 						int r3 = r2;
 						flg = false;
 						while (1){
