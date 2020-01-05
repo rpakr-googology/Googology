@@ -218,7 +218,7 @@ int main() {
 							if (flg) break;
 						}
 						for (int j = r3; j < k; j++){
-							if (p[j] == r3 && n[j] == 1){
+							if (p[j] == r3 && n[j] < n[k]){
 								r3 = j;
 								break;
 							}
