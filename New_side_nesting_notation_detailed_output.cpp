@@ -158,7 +158,7 @@ bool L(string s, string t){
 		if (type(t) == 1){
 //			f("Rule 4",1);
 			if (a == d){
-				res = L(b,e) && leq(c,t) || b == e && L(c,f);
+				res = L(b,e) && leq(c,t) || b == e && L(c,f) || L(e,b) && L(s,f);
 //				g(res,1);
 			} else {
 				res = L(a,d) && leq(c,t) || L(d,a) && L(s,f);
