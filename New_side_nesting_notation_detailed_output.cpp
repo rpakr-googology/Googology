@@ -385,6 +385,8 @@ int main(){
 	} else {
 		if (!isstd(S)){
 			cout << simplify(S) << " is not standard" << endl;
+		} else {
+			cout << simplify(S) << " is standard" << endl;
 		}
 	}
 	*/
