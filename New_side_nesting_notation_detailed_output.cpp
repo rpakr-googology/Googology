@@ -59,7 +59,7 @@ string simplify(string s){
 void f(string s, int n){
 	if (n == det) cout << simplify(s) << endl;
 }
-void f(bool b, int n){
+void g(bool b, int n){
 	if (n == det){
 		if (b){
 			cout << "true" << endl;
@@ -157,25 +157,25 @@ bool L(string s, string t){
 //			f("Rule 4",1);
 			if (a == d){
 				res = L(b,e) && leq(c,t) || b == e && L(c,f);
-//				f(res,1);
+//				g(res,1);
 			} else {
 				res = L(a,d) && leq(c,t) || L(d,a) && L(s,f);
-//				f(res,1);
+//				g(res,1);
 			}
 		} else {
 //			f("Rule 5",1);
 			res = leq(s,d);
-//			f(res,1);
+//			g(res,1);
 		}
 	} else {
 		if (type(t) == 1){
 //			f("Rule 6",1);
 			res = !L(t,s);
-//			f(res,1);
+//			g(res,1);
 		} else {
 //			f("Rule 7",1);
 			res = L(a,d) || a == d && L(b,e);
-//			f(res,1);
+//			g(res,1);
 		}
 	}
 	return res;
