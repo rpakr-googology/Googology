@@ -4,14 +4,16 @@
 //English definition: https://googology.wikia.org/wiki/User_blog:P%E9%80%B2%E5%A4%A7%E5%A5%BD%E3%81%8Dbot/New_Side_Nesting_Notation
 #include <bits/stdc++.h>
 using namespace std;
-//0: no shorthands
-//1: use 0
-//2: use 0 and 1
-//3: use 0, 1 and ω
-int sstd = 3;
+string zero = "()";
+string one = "(()()())";
+//0: No shorthands
+//1: Use 0
+//2: Use 0 and 1
+//3: Use 0, 1 and ω
+int sthd = 3;
 string simplify(string s){
 	string res = s;
-	if (sstd == 0) return res;
+	if (sthd == 0) return res;
 	res = "";
 	for (int i = 0; i < s.size(); i++){
 		res += s[i];
@@ -22,7 +24,7 @@ string simplify(string s){
 			}
 		}
 	}
-	if (sstd == 1) return res;
+	if (sthd == 1) return res;
 	s = res;
 	res = "";
 	for (int i = 0; i < s.size(); i++){
@@ -34,7 +36,7 @@ string simplify(string s){
 			}
 		}
 	}
-	if (sstd == 2) return res;
+	if (sthd == 2) return res;
 	s = res;
 	res = "";
 	for (int i = 0; i < s.size(); i++){
@@ -46,11 +48,9 @@ string simplify(string s){
 			}
 		}
 	}
-	if (sstd == 3) return res;
+	if (sthd == 3) return res;
 	return res;
 }
-string zero = "()";
-string one = "(()()())";
 int type(string s){
 	int res = 1;
 	int nests = 0;
