@@ -136,7 +136,7 @@ bool L(string s, string t){
 	if (type(s) == 1){
 		if (type(t) == 1){
 			if (a == d){
-				return L(b,e) && leq(c,t) || b == e && L(c,f);
+				return L(b,e) && leq(c,t) || b == e && L(c,f) || L(e,b) && L(s,f);
 			} else {
 				return L(a,d) && leq(c,t) || L(d,a) && L(s,f);
 			}
