@@ -242,6 +242,8 @@ void FS(string s, int n){
 						for (string s3 : exp[c]){
 							string S = P(s1,s2,s3);
 							if (!L(s3,S)) continue;
+							if (s1 == zero && L(s,mult(one,s2))) continue;
+							if (s1 != zero && L(s,mult(A(s1,one),s2))) continue;
 							exp[i].insert(S);
 						}
 					}
