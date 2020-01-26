@@ -342,7 +342,6 @@ int main(){
 		}
 	}
 	S = T;
-	E = S;
 	if (!isinT(S)){
 		cout << simplify(S) << " is not valid" << endl;
 	} else {
