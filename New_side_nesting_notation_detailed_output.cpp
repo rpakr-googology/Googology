@@ -377,6 +377,17 @@ void FS(string s, int n){
 }
 int main(){
 	/*
+	string S,T;
+	cin >> S >> T;
+	if (S == T){
+		cout << simplify(S) << "=" << simplify(T) << endl;
+	} else if (L(S,T)){
+		cout << simplify(S) << "<" << simplify(T) << endl;
+	} else {
+		cout << simplify(T) << "<" << simplify(S) << endl;
+	}
+	*/
+	/*
 	string S;
 	cin >> S;
 	if (!isinT(S)){
