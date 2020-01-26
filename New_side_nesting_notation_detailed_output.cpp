@@ -16,18 +16,6 @@ int sthd = 3;
 //2: Detailed output in standardness
 //3: Detailed output in fundamental sequences
 int det = 3;
-void f(string s, int n){
-	if (n == det) cout << s << endl;
-}
-void f(bool b, int n){
-	if (n == det){
-		if (b){
-			cout << "true" << endl;
-		} else {
-			cout << "false" << endl;
-		}
-	}
-}
 string simplify(string s){
 	string res = s;
 	if (sthd == 0) return res;
@@ -67,6 +55,18 @@ string simplify(string s){
 	}
 	if (sthd == 3) return res;
 	return res;
+}
+void f(string s, int n){
+	if (n == det) cout << simplify(s) << endl;
+}
+void f(bool b, int n){
+	if (n == det){
+		if (b){
+			cout << "true" << endl;
+		} else {
+			cout << "false" << endl;
+		}
+	}
 }
 int type(string s){
 	int res = 1;
