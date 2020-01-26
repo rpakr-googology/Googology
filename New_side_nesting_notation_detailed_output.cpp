@@ -326,6 +326,7 @@ void FS(string s, int n){
 				if (isstd(t)){
 					f(t + " is std",3);
 					res = t;
+					f("res=" + res,3);
 				} else {
 					f(t + " is not std",3);
 				}
@@ -337,6 +338,18 @@ void FS(string s, int n){
 	}
 }
 int main(){
+	/*
+	string S;
+	cin >> S;
+	if (!isinT(S)){
+		cout << simplify(S) << " is not valid" << endl;
+	} else {
+		if (!isstd(S)){
+			cout << simplify(S) << " is not standard" << endl;
+		}
+	}
+	*/
+	/*
 	string S;
 	cin >> S;
 	if (!isinT(S)){
@@ -348,4 +361,5 @@ int main(){
 			FS(S,5);
 		}
 	}
+	*/
 }
