@@ -253,6 +253,7 @@ bool isinOT(string S, string x){
 			f("Rule 2.2 check",2);
 			f("mult(one,b)=" + mult(one,b),2);
 			f("x=" + x,2);
+			f("b=" + b,2);
 			if (!leq(mult(one,b),x) || !isinOT(b,mult(one,b))){
 				spcs--;
 				return false;
@@ -261,6 +262,7 @@ bool isinOT(string S, string x){
 			f("Rule 2.3 check",2);
 			f("mult(A(a,one),b)=" + mult(A(a,one),b),2);
 			f("x=" + x,2);
+			f("b=" + b,2);
 			if (!leq(mult(A(a,one),b),x) || !isinOT(b,mult(A(a,one),b))){
 				spcs--;
 				return false;
@@ -282,7 +284,7 @@ bool isinOT(string S, string x){
 			spcs--;
 			return false;
 		}
-		f("Rule 3.2 check 1/2",2);
+		f("Rule 3.1 check 2/2",2);
 		if (!isinOT(t,x)){
 			spcs--;
 			return false;
