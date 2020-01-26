@@ -184,8 +184,8 @@ string mult(string a, string t){
 		}
 		return B(zero,zero,A(B(a,zero,zero),t));
 	} else {
-		string d = rev(arg(rev(t),1));
-		string e = rev(arg(rev(t),2));
+		string d = rev(arg(rev(t),2));
+		string e = rev(arg(rev(t),1));
 		return A(mult(a,d),mult(a,e));
 	}
 }
