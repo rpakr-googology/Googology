@@ -6,6 +6,12 @@
 using namespace std;
 string zero = "()";
 string one = "(()()())";
+int Compcalls = 0;
+int OTcalls=0;
+int R4=0;
+int R5=0;
+int R6=0;
+int R7=0;
 //0: No shorthands
 //1: Use 0
 //2: Use 0 and 1
@@ -111,7 +117,11 @@ bool isinT(string s){
 			if (s[i] == ')') nests--;
 		}
 		if (argcount != 3) return false;
-		return isinT(arg(s,1)) && isinT(arg(s,2)) && isinT(arg(s,3));
+		if (!isinT(arg(s,1))) return false;
+		if (!isinT(arg(s,2))) return false;
+		if (!isinT(arg(s,3))) return false;
+		return true;
+//		return isinT(arg(s,1)) && isinT(arg(s,2)) && isinT(arg(s,3));
 	} else {
 		if (arg(s,1) == zero || arg(s,2) == zero) return false;
 		return isinT(arg(s,1)) && isinT(arg(s,2));
@@ -125,6 +135,7 @@ bool leq(string s, string t){
 	return (L(s,t) || s == t);
 }
 bool L(string s, string t){
+	Compcalls++;
 	if (s == zero) return t != zero;
 	if (s != zero && t == zero) return false;
 	string a = arg(s,1);
@@ -135,19 +146,35 @@ bool L(string s, string t){
 	string f = arg(t,3);
 	if (type(s) == 1){
 		if (type(t) == 1){
+			R4++;
 			if (a == d){
-				return L(b,e) && leq(c,t) || b == e && L(c,f) || L(e,b) && L(s,f);
+				if (b == e){
+					return L(c,f);
+				} else if (L(b,e)){
+					return leq(c,t);
+				} else {
+					return L(s,f);
+				}
+			} else if (L(a,d)){
+				return leq(c,t);
 			} else {
-				return L(a,d) && leq(c,t) || L(d,a) && L(s,f);
+				return L(s,f);
 			}
 		} else {
+			R5++;
 			return leq(s,d);
 		}
 	} else {
 		if (type(t) == 1){
+			R6++;
 			return !L(t,s);
 		} else {
-			return L(a,d) || a == d && L(b,e);
+			R7++;
+			if (a == d){
+				return L(b,e);
+			} else {
+				return L(a,d);
+			}
 		}
 	}
 }
@@ -190,6 +217,7 @@ string mult(string a, string t){
 	}
 }
 bool isinOT(string S, string x){
+	OTcalls++;
 	if (S == zero) return true;
 	if (type(S) == 1){
 		string a = arg(S,1);
@@ -199,9 +227,11 @@ bool isinOT(string S, string x){
 		if (!isinOT(b,x)) return false;
 		if (!isinOT(c,x)) return false;
 		if (a == zero){
-			if (!leq(mult(one,b),x) || !isinOT(b,mult(one,b))) return false;
+			if (!leq(mult(one,b),x)) return false;
+			if (!isinOT(b,mult(one,b))) return false;
 		} else {
-			if (!leq(mult(A(a,one),b),x) || !isinOT(b,mult(A(a,one),b))) return false;
+			if (!leq(mult(A(a,one),b),x)) return false;
+			if (!isinOT(b,mult(A(a,one),b))) return false;
 		}
 		if (!L(c,S)) return false;
 	} else {
@@ -239,12 +269,16 @@ void FS(string s, int n){
 				int c = i - 2 - a - b;
 				for (string s1 : exp[a]){
 					for (string s2 : exp[b]){
+						if (s1 == zero){
+							if (L(s,mult(one,s2))) continue;
+						} else {
+							if (L(s,mult(A(s1,one),s2))) continue;
+						}
 						for (string s3 : exp[c]){
 							string S = P(s1,s2,s3);
 							if (!L(s3,S)) continue;
-							if (s1 == zero && L(s,mult(one,s2))) continue;
-							if (s1 != zero && L(s,mult(A(s1,one),s2))) continue;
 							exp[i].insert(S);
+if (i==19 && exp[i].size()%1000==0) cout << exp[i].size() << endl;
 						}
 					}
 				}
@@ -253,27 +287,40 @@ void FS(string s, int n){
 		for (int a = 1; a < i - 1; a++){
 			int b = i - 1 - a;
 			for (string s1 : exp[a]){
+				if (!isinPT(s1)) continue;
 				for (string s2 : exp[b]){
-					string S = A(s1,s2);
-					string S1 = rev(arg(rev(S),2));
-					string S2 = rev(arg(rev(S),1));
-					if (isinPT(S1) && !leq(S2,S1)) continue;
-					if (type(S1) == 2){
-						string b = rev(arg(rev(S1),1));
-						if (!leq(S2,b)) continue; 
+					//s2+s1
+					if (isinPT(s2)){
+						if (!leq(s1,s2)) continue;
+					}
+					string S = A(s2,s1);
+					if (type(s1) == 2){
+						string b = rev(arg(rev(s1),1));
+						if (!leq(s2,b)) continue; 
 					}
 					exp[i].insert(S);
+if (i==19 && exp[i].size()%1000==0) cout << exp[i].size() << endl;
 				}
 			}
 		}
 		for (string t : exp[i]){
-			if (L(res,t) && L(t,s)){
+			if (L(t,s)){
+				if (L(res,t)){
 				if (isstd(t)) res = t;
+				}
 			}
 		}
-		if ((3 * i + 2 - s.size()) % 9 == 0 && 3 * i + 2 > s.size()){
-			cout << simplify(s) << "[" << (3 * i + 2 - s.size()) / 9 << "]=" << simplify(res) << endl;
-		}
+		cout << simplify(res) << endl;
+		/*
+		cout << 3*i+2 << ":" << exp[i].size() << endl;
+		cout << "Comparison calls: " << Compcalls << endl;
+		cout << "Rule 4: "<< R4 << "," << (double)R4/Compcalls << endl;
+		cout << "Rule 5: "<< R5 << "," << (double)R5/Compcalls << endl;
+		cout << "Rule 6: "<< R6 << "," << (double)R6/Compcalls << endl;
+		cout << "Rule 7: "<< R7 << "," << (double)R7/Compcalls << endl;
+		cout << "OT calls: " << OTcalls << endl;
+		cout << endl;
+		*/
 	}
 }
 int main(){
@@ -295,6 +342,7 @@ int main(){
 		}
 	}
 	S = T;
+	E = S;
 	if (!isinT(S)){
 		cout << simplify(S) << " is not valid" << endl;
 	} else {
