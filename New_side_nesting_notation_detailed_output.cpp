@@ -16,6 +16,7 @@ int sthd = 3;
 //2: Detailed output in standardness
 //3: Detailed output in fundamental sequences
 int det = 3;
+int spcs = 0;
 string simplify(string s){
 	string res = s;
 	if (sthd == 0) return res;
@@ -57,6 +58,7 @@ string simplify(string s){
 	return res;
 }
 void f(string s, int n){
+	if (n == 2 && det == 2) for (int i = 0; i < spcs; i++) cout << ' ';
 	if (n == det) cout << simplify(s) << endl;
 }
 void g(bool b, int n){
@@ -220,48 +222,79 @@ string rev(string s){
 	return res;
 }
 bool isinOT(string S, string x){
+	spcs++;
 	f("S=" + S,2);
 	f("x=" + x,2);
-	if (S == zero) return true;
+	if (S == zero){
+		spcs--;
+		return true;
+	}
 	if (type(S) == 1){
 		f("Rule 2",2);
 		string a = arg(S,1);
 		string b = arg(S,2);
 		string c = arg(S,3);
 		f("Rule 2.1 check 1/3",2);
-		if (!isinOT(a,x)) return false;
+		if (!isinOT(a,x)){
+			spcs--;
+			return false;
+		}
 		f("Rule 2.1 check 2/3",2);
-		if (!isinOT(b,x)) return false;
+		if (!isinOT(b,x)){
+			spcs--;
+			return false;
+		}
 		f("Rule 2.1 check 3/3",2);
-		if (!isinOT(c,x)) return false;
+		if (!isinOT(c,x)){
+			spcs--;
+			return false;
+		}
 		if (a == zero){
 			f("Rule 2.2 check",2);
 			f("mult(one,b)=" + mult(one,b),2);
 			f("x=" + x,2);
-			if (!leq(mult(one,b),x) || !isinOT(b,mult(one,b))) return false;
+			if (!leq(mult(one,b),x) || !isinOT(b,mult(one,b))){
+				spcs--;
+				return false;
+			}
 		} else {
 			f("Rule 2.3 check",2);
 			f("mult(A(a,one),b)=" + mult(A(a,one),b),2);
 			f("x=" + x,2);
-			if (!leq(mult(A(a,one),b),x) || !isinOT(b,mult(A(a,one),b))) return false;
+			if (!leq(mult(A(a,one),b),x) || !isinOT(b,mult(A(a,one),b))){
+				spcs--;
+				return false;
+			}
 		}
 		f("Rule 2.4 check",2);
 		f("c=" + c,2);
 		f("S=" + S,2);
-		if (!L(c,S)) return false;
+		if (!L(c,S)){
+			spcs--;
+			return false;
+		}
 	} else {
 		f("Rule 3",2);
 		string s = rev(arg(rev(S),2));
 		string t = rev(arg(rev(S),1));
 		f("Rule 3.1 check 1/2",2);
-		if (!isinOT(s,x)) return false;
+		if (!isinOT(s,x)){
+			spcs--;
+			return false;
+		}
 		f("Rule 3.2 check 1/2",2);
-		if (!isinOT(t,x)) return false;
+		if (!isinOT(t,x)){
+			spcs--;
+			return false;
+		}
 		if (isinPT(s)){
 			f("Rule 3.2 check",2);
 			f("t=" + t,2);
 			f("s=" + s,2);
-			if (!leq(t,s)) return false;
+			if (!leq(t,s)){
+				spcs--;
+				return false;
+			}
 		}
 		if (type(s) == 2){
 			f("Rule 3.3 check",2);
@@ -269,10 +302,14 @@ bool isinOT(string S, string x){
 			string b = rev(arg(rev(s),1));
 			f("t=" + t,2);
 			f("b=" + b,2);
-			if (!leq(t,b)) return false;
+			if (!leq(t,b)){
+				spcs--;
+				return false;
+			}
 		}
 	}
-	f("S=" + S + "is in OT_{x=" + x + "}",2);
+	f("S=" + S + " is in OT_{x=" + x + "}",2);
+	spcs--;
 	return true;
 }
 bool isstd(string s){
