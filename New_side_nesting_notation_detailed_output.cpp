@@ -185,7 +185,7 @@ bool L(string s, string t){
 string A(string a, string b){
 	return a + '+' + b;
 }
-string B(string a, string b, string c){
+string P(string a, string b, string c){
 	return '(' + a + b + c + ')';
 }
 string rev(string s){
@@ -201,19 +201,19 @@ string mult(string a, string t){
 		string d = arg(t,1);
 		string e = arg(t,2);
 		string f = arg(t,3);
-		if (leq(B(zero,zero,B(zero,zero,A(B(a,zero,zero),one))),t)){
+		if (leq(P(zero,zero,P(zero,zero,A(P(a,zero,zero),one))),t)){
 			return t;
 		}
 		if (t == one){
-			return B(a,zero,zero);
+			return P(a,zero,zero);
 		}
 		if (d == zero && e == zero && t != one){
-			return B(zero,zero,A(B(a,zero,zero),f));
+			return P(zero,zero,A(P(a,zero,zero),f));
 		}
 		if (d == zero && e != zero){
-			return B(zero,zero,A(B(a,zero,zero),t));
+			return P(zero,zero,A(P(a,zero,zero),t));
 		}
-		return B(zero,zero,A(B(a,zero,zero),t));
+		return P(zero,zero,A(P(a,zero,zero),t));
 	} else {
 		string d = rev(arg(rev(t),2));
 		string e = rev(arg(rev(t),1));
@@ -335,7 +335,7 @@ void FS(string s, int n){
 				for (string s1 : exp[a]){
 					for (string s2 : exp[b]){
 						for (string s3 : exp[c]){
-							string S = B(s1,s2,s3);
+							string S = P(s1,s2,s3);
 							if (!L(s3,S)) continue;
 							exp[i].insert(S);
 						}
