@@ -275,8 +275,24 @@ void FS(string s, int n){
 	}
 }
 int main(){
-	string S;
+	string S,T;
 	cin >> S;
+	for (int i = 0; i < S.size(); i++){
+		T += S[i];
+		if (S[i] == '0'){
+			T.pop_back();
+			T += zero;
+		}
+		if (S[i] == '1'){
+			T.pop_back();
+			T += one;
+		}
+		if (S[i] == '2'){
+			T.pop_back();
+			T += "(()()())+(()()())";
+		}
+	}
+	S = T;
 	if (!isinT(S)){
 		cout << simplify(S) << " is not valid" << endl;
 	} else {
