@@ -157,9 +157,15 @@ string A(string a, string b){
 string B(string a, string b, string c){
 	return '(' + a + b + c + ')';
 }
+string rev(string s){
+	string res;
+	for (int i = s.size() - 1; i >= 0; i--){
+		res += s[i];
+	}
+	return res;
+}
 string mult(string a, string t){
 	if (t == zero) return zero;
-	string res;
 	if (type(t) == 1){
 		string d = arg(t,1);
 		string e = arg(t,2);
@@ -178,17 +184,10 @@ string mult(string a, string t){
 		}
 		return B(zero,zero,A(B(a,zero,zero),t));
 	} else {
-		string d = arg(t,1);
-		string e = arg(t,2);
+		string d = rev(arg(rev(t),1));
+		string e = rev(arg(rev(t),2));
 		return A(mult(a,d),mult(a,e));
 	}
-}
-string rev(string s){
-	string res;
-	for (int i = s.size() - 1; i >= 0; i--){
-		res += s[i];
-	}
-	return res;
 }
 bool isinOT(string S, string x){
 	if (S == zero) return true;
@@ -214,7 +213,6 @@ bool isinOT(string S, string x){
 			if (!leq(t,s)) return false;
 		}
 		if (type(s) == 2){
-			string a = rev(arg(rev(s),2));
 			string b = rev(arg(rev(s),1));
 			if (!leq(t,b)) return false;
 		}
