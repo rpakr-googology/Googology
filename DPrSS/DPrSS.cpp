@@ -210,7 +210,7 @@ int main() {
 									length++;
 								}
 							}
-							for (int j = 0; j < k - r; j++){
+							for (int j = 0; j < k - r - 1; j++){
 								seq.pop_back();
 								length--;
 							}
