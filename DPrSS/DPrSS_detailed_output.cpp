@@ -173,7 +173,7 @@ int main() {
 						seq.pop_back();
 						//Rule 4 check
 						flg = true;
-						if (r + i != k) flg = false;
+						if (r + i != k - 1) flg = false;
 						if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) flg = false;
 						for (int j = r2 + i + 1; j < k; j++){
 							if (seq[j] <= seq[r2 + i]) flg = false;
@@ -183,7 +183,7 @@ int main() {
 							int length = k;
 							int delta = seq[r] - seq[r2];
 							cout << "Delta: " << delta << endl;
-							for (int j = k; j >= r; j--){
+							for (int j = k; j > r; j--){
 								seq.pop_back();
 								length--;
 							}
