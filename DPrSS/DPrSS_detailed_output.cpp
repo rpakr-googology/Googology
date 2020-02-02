@@ -140,7 +140,7 @@ int main() {
 					cout << "(Rule 3, Constant case)" << endl;
 				} else {
 					//r search
-					int r = k;
+					int r = k - 1;
 					while (n[r] >= n[k - 1]){
 						r = p[r];
 					}
@@ -207,9 +207,9 @@ int main() {
 							int r3 = r2;
 							flg = false;
 							while (1){
-								for (int j = k; j > r3; j--){
+								for (int j = k - 1; j > r3; j--){
 									if (p[j] == r3){
-										if (n[j] < n[k]){
+										if (n[j] < n[k - 1]){
 											flg = true;
 										} else {
 											r3 = j;
@@ -220,14 +220,14 @@ int main() {
 								if (flg) break;
 							}
 							for (int j = r3; j < k; j++){
-								if (p[j] == r3 && n[j] < n[k]){
+								if (p[j] == r3 && n[j] < n[k - 1]){
 									r3 = j;
 									break;
 								}
 							}
 							cout << "New bad root: entry " << r3 + 1 << ", " << seq[r3] << endl;
 							//Expansion
-							int delta = seq[k] - seq[r3] - 1;
+							int delta = seq[k - 1] - seq[r3] - 1;
 							cout << "Delta: " << delta << endl;
 							int length = k;
 							seq.pop_back();
