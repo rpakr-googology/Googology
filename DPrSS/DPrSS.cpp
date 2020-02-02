@@ -147,6 +147,7 @@ int main() {
 					if (flg){
 						cout << "Expansion undefined" << endl;
 					} else {
+						seq.pop_back();
 						//Rule 4 check
 						flg = true;
 						if (r + i != k - 1) flg = false;
