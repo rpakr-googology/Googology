@@ -106,7 +106,7 @@ int main() {
 					seq.pop_back();
 					length--;
 					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int i = p[k]; i < k; i++){
+						for (int i = p[k - 1]; i < k; i++){
 							seq.push_back(seq[i]);
 							length++;
 						}
