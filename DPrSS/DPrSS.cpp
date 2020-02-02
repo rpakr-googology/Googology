@@ -58,81 +58,69 @@ int main() {
 			}
 		}
 	}
-	if (valid){
+	if (!valid){
+		cout << "Sequence invalid" << endl;
+	} else {
 		if (str[1] == ')'){
 			//Rule 1
 			cout << bracket << endl;
 		} else {
+			k++;
 			bool flg = true;
-			for (int i = 0; i < k; i++){
-				if (seq[i] < seq[k]){
+			for (int i = 0; i < k - 1; i++){
+				if (seq[i] < seq[k - 1]){
 					flg = false;
-				} 
+				}
 			}
 			if (flg){
-                //Rule 2
-                if (str[2] == ')'){
-                    cout << "()[" << bracket + 1 << "]" << endl;
-                } else {
-                    cout << '(';
-                    for (int i = 0; i <= k - 2; i++){
-					cout << seq[i] << ',';
-					}
-					cout << seq[k - 1] << ')';
+				//Rule 2
+				if (str[2] == ')'){
+					cout << "()[" << bracket + 1 << "]" << endl;
+				} else {
+					cout << '(';
+					for (int i = 0; i < k - 2; i++){
+						cout << seq[i] << ',';
+						}
+					cout << seq[k - 2] << ')';
 					cout << '[' << bracket + 1 << ']' << endl;
 				}
 			} else {
 				//Rule 3,4,5
-				//Parent search
-				int r;
-				for (int i = k; i >= 0; i--){
-					r = i;
-					if (seq[i] < seq.back()){
-						break;
+				vector<int> p(k,-1);
+				for (int i = 0; i < k; i++){
+					for (int j = i - 1; j >= 0; j--){
+						if (seq[j] < seq[i]){
+							flg = true;
+							p[k] = j;
+							break;
+						}
 					}
 				}
-				int length = k;
-				if (seq.back() - seq[r] == 1){
+				vector<int> n(k,1);
+				for (int i = 0; i < k; i++){
+					if (p[i] != -1) n[i] = seq[i] - seq[p[i]];
+				}
+				if (n[k - 1] == 1){
 					//Rule 3
+					int length = k;
 					seq.pop_back();
 					length--;
 					for (int rept = 0; rept < bracket - 1; rept++){
-						for (int i = r; i < k; i++){
+						for (int i = p[k]; i < k; i++){
 							seq.push_back(seq[i]);
 							length++;
 						}
 					}
 					//Output
 					cout << '(';
-					for (int i = 0; i < length ; i++){
+					for (int i = 0; i < length - 1; i++){
 						cout << seq[i] << ',';
 					}
-					cout << seq[length] << ')';
+					cout << seq[length - 1] << ')';
 					cout << '[' << bracket << ']' << endl;
 				} else {
-					//Parent search
-					int p[k + 1];
-					for (int i = 0; i <= k; i++){
-					    p[i] = -1;
-						for (int j = i; j >= 0; j--){
-							if (seq[j] < seq[i]){
-								p[i] = j;
-								break;
-							}
-						}
-					}
-					//Find node value
-					int n[k + 2];
-					for (int i = 0; i <= k; i++){
-						if (p[i] == -1){
-							n[i] = -1;
-						} else {
-							n[i] = seq[i] - seq[p[i]];
-						}
-					}
-					n[k + 1] = 0;
 					//r search
-					r = k;
+					int r = k;
 					while (n[r] >= n[k]){
 						r = p[r];
 					}
@@ -140,8 +128,13 @@ int main() {
 					int r2 = r;
 					int i;
 					seq.push_back(0);
-					while (r2 >= 0){
+					bool flg = false;
+					while (true){
 						r2 = p[r2];
+						if (r2 == -1){
+							flg = true;
+							break;
+						}
 						if (n[r2] < n[k]){
 							i = 0;
 							while (seq[r2 + i] - seq[r2] == seq[r + i] - seq[r]){
@@ -152,84 +145,88 @@ int main() {
 							}
 						}
 					}
-					seq.pop_back();
-					//Rule 4 check
-					flg = true;
-					if (r + i != k) flg = false;
-					if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) flg = false;
-					for (int j = r2 + i + 1; j < k; j++){
-						if (seq[j] <= seq[r2 + i]) flg = false;
-					}
 					if (flg){
-						//Expansion
-						int delta = seq[r] - seq[r2];
-						for (int j = k; j >= r; j--){
-							seq.pop_back();
-							length--;
-						}
-						for (int rept = 0; rept < bracket - 1; rept++){
-							for (int j = r2; j < r; j++){
-								seq.push_back(seq[j] + delta * (rept + 1));
-								length++;
-							}
-						}
-						//Output
-						cout << '(';
-						for (int j = 0; j < length; j++){
-							cout << seq[j] << ',';
-						}
-						cout << seq[length] << ')';
-						cout << '[' << bracket << ']' << endl;
+						cout << "Expansion undefined" << endl;
 					} else {
-						//r3 search
-						int r3 = r2;
-						flg = false;
-						while (1){
-							for (int j = k; j > r3; j--){
-								if (p[j] == r3){
-									if (n[j] < n[k]){
-										flg = true;
-									} else {
-										r3 = j;
+						seq.pop_back();
+						//Rule 4 check
+						flg = true;
+						if (r + i != k) flg = false;
+						if (seq[r2 + i] - seq[r2] != seq[r + i] - seq[r] - 1) flg = false;
+						for (int j = r2 + i + 1; j < k; j++){
+							if (seq[j] <= seq[r2 + i]) flg = false;
+						}
+						if (flg){
+							//Expansion
+							int length = k;
+							int delta = seq[r] - seq[r2];
+							for (int j = k; j >= r; j--){
+								seq.pop_back();
+								length--;
+							}
+							for (int rept = 0; rept < bracket - 1; rept++){
+								for (int j = r2; j < r; j++){
+									seq.push_back(seq[j] + delta * (rept + 1));
+									length++;
+								}
+							}
+							//Output
+							cout << '(';
+							for (int j = 0; j < length; j++){
+								cout << seq[j] << ',';
+							}
+							cout << seq[length] << ')';
+							cout << '[' << bracket << ']' << endl;
+						} else {
+							//r3 search
+							int r3 = r2;
+							flg = false;
+							while (1){
+								for (int j = k; j > r3; j--){
+									if (p[j] == r3){
+										if (n[j] < n[k]){
+											flg = true;
+										} else {
+											r3 = j;
+										}
+										break;
 									}
+								}
+								if (flg) break;
+							}
+							for (int j = r3; j < k; j++){
+								if (p[j] == r3 && n[j] < n[k]){
+									r3 = j;
 									break;
 								}
 							}
-							if (flg) break;
-						}
-						for (int j = r3; j < k; j++){
-							if (p[j] == r3 && n[j] < n[k]){
-								r3 = j;
-								break;
-							}
-						}
-						//Expansion
-						int delta = seq[k] - seq[r3] - 1;
-						seq.pop_back();
-						length--;
-						for (int rept = 0; rept < bracket - 1; rept++){
-							for (int j = r3; j < k; j++){
-								seq.push_back(seq[j] + delta * (rept + 1));
-								length++;
-							}
-						}
-						for (int j = 0; j < k - r; j++){
+							//Expansion
+							int delta = seq[k] - seq[r3] - 1;
+							int length = k;
 							seq.pop_back();
 							length--;
+							for (int rept = 0; rept < bracket - 1; rept++){
+								for (int j = r3; j < k; j++){
+									seq.push_back(seq[j] + delta * (rept + 1));
+									length++;
+								}
+							}
+							for (int j = 0; j < k - r; j++){
+								seq.pop_back();
+								length--;
+							}
+							//Output
+							cout << "(";
+							for (int j = 0; j < length; j++){
+								cout << seq[j] << ',';
+							}
+							cout << seq[length] << ')';
+							cout << '[' << bracket << ']' << endl;
 						}
-						//Output
-						cout << "(";
-						for (int j = 0; j < length; j++){
-							cout << seq[j] << ',';
-						}
-						cout << seq[length] << ')';
-						cout << '[' << bracket << ']' << endl;
 					}
 				}
 			}
 		}
-	} else {
-		cout << "Sequence invalid" << endl;
 	}
 	return 0;
 }
