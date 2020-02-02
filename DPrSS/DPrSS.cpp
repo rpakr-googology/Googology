@@ -120,7 +120,7 @@ int main() {
 				} else {
 					//r search
 					int r = k;
-					while (n[r] >= n[k]){
+					while (n[r] >= n[k - 1]){
 						r = p[r];
 					}
 					//r2 search
@@ -134,7 +134,7 @@ int main() {
 							flg = true;
 							break;
 						}
-						if (n[r2] < n[k]){
+						if (n[r2] < n[k - 1]){
 							i = 0;
 							while (seq[r2 + i] - seq[r2] == seq[r + i] - seq[r]){
 								i++;
