@@ -204,7 +204,7 @@ int main() {
 							seq.pop_back();
 							length--;
 							for (int rept = 0; rept < bracket - 1; rept++){
-								for (int j = r3; j < k; j++){
+								for (int j = r3; j < k - 1; j++){
 									seq.push_back(seq[j] + delta * (rept + 1));
 									length++;
 								}
