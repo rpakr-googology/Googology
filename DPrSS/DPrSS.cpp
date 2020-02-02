@@ -90,7 +90,6 @@ int main() {
 				for (int i = 0; i < k; i++){
 					for (int j = i - 1; j >= 0; j--){
 						if (seq[j] < seq[i]){
-							flg = true;
 							p[i] = j;
 							break;
 						}
@@ -148,7 +147,6 @@ int main() {
 					if (flg){
 						cout << "Expansion undefined" << endl;
 					} else {
-						seq.pop_back();
 						//Rule 4 check
 						flg = true;
 						if (r + i != k) flg = false;
@@ -160,7 +158,7 @@ int main() {
 							//Expansion
 							int length = k;
 							int delta = seq[r] - seq[r2];
-							for (int j = k; j >= r; j--){
+							for (int j = k; j > r; j--){
 								seq.pop_back();
 								length--;
 							}
@@ -172,10 +170,10 @@ int main() {
 							}
 							//Output
 							cout << '(';
-							for (int j = 0; j < length; j++){
+							for (int j = 0; j < length - 1; j++){
 								cout << seq[j] << ',';
 							}
-							cout << seq[length] << ')';
+							cout << seq[length - 1] << ')';
 							cout << '[' << bracket << ']' << endl;
 						} else {
 							//r3 search
@@ -217,10 +215,10 @@ int main() {
 							}
 							//Output
 							cout << "(";
-							for (int j = 0; j < length; j++){
+							for (int j = 0; j < length - 1; j++){
 								cout << seq[j] << ',';
 							}
-							cout << seq[length] << ')';
+							cout << seq[length - 1] << ')';
 							cout << '[' << bracket << ']' << endl;
 						}
 					}
