@@ -1,17 +1,21 @@
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
 int main(){
   int M;
   cin >> M;
-  vector<int> A;
-  while (true){
-    int x;
-    cin >> x;
-    if (x == -1){
-      break;
+  cin.ignore();
+  vector<int> A = {0};
+  string S;
+  getline(cin, S);
+  for (char c : S){
+    if (c == ' '){
+      A.push_back(0);
+    } else {
+      A.back() *= 10;
+      A.back() += c - '0';
     }
-    A.push_back(x);
   }
   int n;
   cin >> n;
