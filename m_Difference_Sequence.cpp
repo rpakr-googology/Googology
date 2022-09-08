@@ -3,22 +3,26 @@
 #include <string>
 using namespace std;
 int main(){
-  int M;
-  cin >> M;
-  cin.ignore();
+  int M = 1;
   vector<int> A = {0};
   string S;
   getline(cin, S);
+  if (S == "#") break;
   for (char c : S){
-    if (c == ' '){
+    if (!isdigit(c) && !isalpha(c)){
       A.push_back(0);
-    } else {
+    } else if (isdigit(c)){
       A.back() *= 10;
       A.back() += c - '0';
+    } else {
+      int l = c - 'a' + 1;
+      A.pop_back();
+      for (int i = 0; i < (1 << l); i++){
+        A.push_back(__builtin_popcount(i));
+      }
     }
   }
-  int n;
-  cin >> n;
+  int n = 4;
   int N = A.size();
   cout << "a = [";
   for (int i = 0; i < N; i++){
