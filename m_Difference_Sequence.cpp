@@ -7,7 +7,6 @@ int main(){
   vector<int> A = {0};
   string S;
   getline(cin, S);
-  if (S == "#") break;
   for (char c : S){
     if (!isdigit(c) && !isalpha(c)){
       A.push_back(0);
